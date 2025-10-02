@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a14633626ba5d44ab10051ee5c60c22, type: 3}
+  m_Name: ABB IRB 6700 235 Config
+  m_EditorClassIdentifier: 
+  _frames:
+  - _name: Base
+    _alpha: 0
+    _a: 0
+    _d: 0
+    _theta: 0
+  - _name: Joint_1
+    _alpha: -1.5707964
+    _a: 0.32
+    _d: 0.78
+    _theta: 0
+  - _name: Joint_2
+    _alpha: 0
+    _a: 1.135
+    _d: 0
+    _theta: -1.5707964
+  - _name: Joint_3
+    _alpha: -1.5707964
+    _a: 0.2
+    _d: 0
+    _theta: 0
+  - _name: Joint_4
+    _alpha: -1.5707964
+    _a: 0
+    _d: 1.1825
+    _theta: 0
+  - _name: Joint_5
+    _alpha: 1.5707964
+    _a: 0
+    _d: 0
+    _theta: 0
+  - _name: Joint_6
+    _alpha: 0
+    _a: 0
+    _d: 0.35
+    _theta: 0
+  - _name: Flange
+    _alpha: 0
+    _a: 0
+    _d: 0
+    _theta: 3.1415927
+  _joints:
+  - _name: Joint_1
+    _type: 0
+    _limits: {x: -170, y: 170}
+    _offset: 0
+    _factor: 1
+    _speedMax: 100
+    _accMax: 1000
+  - _name: Joint_2
+    _type: 0
+    _limits: {x: -65, y: 85}
+    _offset: 0
+    _factor: 1
+    _speedMax: 90
+    _accMax: 1000
+  - _name: Joint_3
+    _type: 0
+    _limits: {x: -180, y: 70}
+    _offset: 0
+    _factor: 1
+    _speedMax: 90
+    _accMax: 1000
+  - _name: Joint_4
+    _type: 0
+    _limits: {x: -300, y: 300}
+    _offset: 0
+    _factor: 1
+    _speedMax: 170
+    _accMax: 1000
+  - _name: Joint_5
+    _type: 0
+    _limits: {x: -120, y: 120}
+    _offset: 0
+    _factor: -1
+    _speedMax: 120
+    _accMax: 1000
+  - _name: Joint_6
+    _type: 0
+    _limits: {x: -370, y: 370}
+    _offset: 0
+    _factor: 1
+    _speedMax: 210
+    _accMax: 1000
+  _cartesianLimit:
+    _linearSpeed: 5
+    _linearAcc: 15
+    _rotationSpeed: 180
+    _rotationAcc: 1000

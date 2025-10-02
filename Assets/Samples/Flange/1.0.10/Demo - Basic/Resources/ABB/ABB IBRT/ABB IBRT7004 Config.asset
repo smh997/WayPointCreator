@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a14633626ba5d44ab10051ee5c60c22, type: 3}
+  m_Name: ABB IBRT7004 Config
+  m_EditorClassIdentifier: 
+  _frames:
+  - _name: Base
+    _alpha: -1.5707964
+    _a: 0
+    _d: 0
+    _theta: 0
+  - _name: Joint_1
+    _alpha: 1.5707964
+    _a: 0
+    _d: 0
+    _theta: 0
+  - _name: Frame
+    _alpha: 0
+    _a: 0
+    _d: 0.65
+    _theta: 0
+  _joints:
+  - _name: Joint_1
+    _type: 1
+    _limits: {x: 0, y: 19.75}
+    _offset: 0
+    _factor: 1
+    _speedMax: 3
+    _accMax: 15
+  _cartesianLimit:
+    _linearSpeed: 2
+    _linearAcc: 6
+    _rotationSpeed: 180
+    _rotationAcc: 900
