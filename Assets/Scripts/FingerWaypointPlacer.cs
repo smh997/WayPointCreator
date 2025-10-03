@@ -1,14 +1,23 @@
 ﻿using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
-using UnityEngine;
+using Preliy.Flange;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
-using System.Collections.Generic;
+using UnityEngine;
 
 public enum PlacementPhase
 {
+    RobotInit,
     Calibration,
     Waypoint
+}
+
+[System.Serializable]
+public class RobotState
+{
+    public float[] joints;
+    public float[] tcp; // [x, y, z, rx, ry, rz]
 }
 
 public class FingerWaypointPlacer : MonoBehaviour
@@ -17,14 +26,17 @@ public class FingerWaypointPlacer : MonoBehaviour
     public WaypointManager waypointManager;
     public GameObject waypointPreviewPrefab;
     public Transform robotBase;
-    public GameObject calibrationCanvas; // assign your calibration UI canvas here
+    //public Transform robotEndEffector;
+    public GameObject calibrationCanvas;
+    public Controller robotController; // assign your controller here
+    private Robot robot;
 
     [Header("Settings")]
     public Handedness handToUse = Handedness.Right;
     public float pinchCooldown = 0.5f;
 
     [Header("Networking")]
-    public string serverIP = "192.168.0.104";
+    public string serverIP = "192.168.0.100";
     public int serverPort = 5000;
 
     [Header("Clap Gesture Settings")]
@@ -38,44 +50,120 @@ public class FingerWaypointPlacer : MonoBehaviour
     private Vector3 lastLeftPos;
     private Vector3 lastRightPos;
 
-    // Phase state
-    public PlacementPhase currentPhase = PlacementPhase.Calibration;
+    public PlacementPhase currentPhase = PlacementPhase.RobotInit;
 
     void Start()
     {
+        // Instantiate preview
         if (waypointPreviewPrefab != null)
         {
             previewInstance = Instantiate(waypointPreviewPrefab);
             previewInstance.SetActive(false);
         }
+        Debug.Log($"Robot base position: {robotBase.position}");
 
-        SetPhase(PlacementPhase.Calibration); // start in calibration mode
+        // Start sequentially
+        StartCoroutine(SequentialFlow());
     }
 
-    void Update()
+    private System.Collections.IEnumerator SequentialFlow()
     {
-        if (currentPhase == PlacementPhase.Calibration)
+        // --- ROBOT INIT ---
+        Debug.Log("Connecting to robot and fetching initial state...");
+        RobotState state = GetRobotState();
+        UpdateDigitalTwin(state);
+        Debug.Log("Robot initialized.");
+        yield return new WaitForSeconds(0.5f); // small delay for visual stability
+
+        // --- CALIBRATION ---
+        SetPhase(PlacementPhase.Calibration);
+        Debug.Log("Waiting for calibration clap...");
+        while (!IsTwoHandClap())
         {
-            // Only one-time calibration, waiting for clap
-            if (IsTwoHandClap())
-            {
-                Debug.Log("Clap detected → Calibration complete, switching to Waypoint Phase");
-                SetPhase(PlacementPhase.Waypoint);
-            }
+            yield return null; // wait until clap detected
         }
-        else if (currentPhase == PlacementPhase.Waypoint)
+        Debug.Log("Calibration complete.");
+        Debug.Log($"CHanged: Robot base position: {robotBase.position}");
+        yield return new WaitForSeconds(0.2f);
+
+        // --- WAYPOINT PLACEMENT ---
+        SetPhase(PlacementPhase.Waypoint);
+        Debug.Log("Waypoint phase started. Pinch to place waypoints, clap to send all.");
+
+        // Stay in Waypoint phase indefinitely
+        while (true)
         {
             HandleWaypointPlacement();
-
             if (IsTwoHandClap())
             {
-                Debug.Log("Clap detected → Sending waypoints");
                 SendAllWaypoints();
-                // stay in Waypoint phase, no going back
             }
+            yield return null;
         }
     }
 
+    #region Robot Communication (Sequential)
+    private RobotState GetRobotState()
+    {
+        try
+        {
+            using (TcpClient client = new TcpClient(serverIP, serverPort))
+            using (NetworkStream stream = client.GetStream())
+            {
+                // Read up to 1024 bytes
+                byte[] buffer = new byte[1024];
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                string json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                RobotState state = JsonUtility.FromJson<RobotState>(json);
+                return state;
+            }
+        }
+        catch (SocketException e)
+        {
+            Debug.LogError("Failed to connect to robot: " + e.Message);
+            return new RobotState(); // empty fallback
+        }
+    }
+
+    private void UpdateDigitalTwin(RobotState state)
+    {
+        if (robotController == null)
+        {
+            Debug.LogWarning("RobotController not assigned!");
+            return;
+        }
+
+        // Assuming your RobotController has a MechanicalGroup.Robot object
+        robot = robotController.MechanicalGroup.Robot;
+
+        if (state.joints != null && state.joints.Length > 0)
+        {
+            // Update robot joint values
+            robot.Joints.SetJointValues(state.joints);
+            Debug.Log("Robot joints updated from digital twin.");
+        }
+        else
+        {
+            Debug.LogWarning("RobotState has no joint data.");
+        }
+
+        //if (state.tcp != null && state.tcp.Length >= 6)
+        //{
+        //    // Optionally update end-effector pose if needed
+        //    Vector3 position = new Vector3(state.tcp[0], state.tcp[1], state.tcp[2]);
+        //    Vector3 rotationEuler = new Vector3(state.tcp[3], state.tcp[4], state.tcp[5]);
+        //    robot.EndEffector.SetPose(position, Quaternion.Euler(rotationEuler));
+        //    Debug.Log("Robot TCP (pose) updated from digital twin.");
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("RobotState has incomplete TCP data.");
+        //}
+
+    }
+    #endregion
+
+    #region Waypoint Placement
     private void HandleWaypointPlacement()
     {
         if (HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, handToUse, out MixedRealityPose pose))
@@ -91,46 +179,23 @@ public class FingerWaypointPlacer : MonoBehaviour
             {
                 waypointManager.AddWaypoint(pose.Position, pose.Rotation);
 
-                // Relative position in Unity robot frame
+                // Unity → UR10
                 Vector3 localPosUnity = robotBase.InverseTransformPoint(pose.Position);
-
-                // Convert to UR10 convention (swap Y/Z)
-                Vector3 localPosUR = new Vector3(
-                    -localPosUnity.x,
-                    -localPosUnity.z,  // Unity Z → UR Y
-                    localPosUnity.y   // Unity Y → UR Z
-                );
-
-                // Relative rotation (Unity frame)
+                Vector3 localPosUR = new Vector3(-localPosUnity.z, -localPosUnity.x, localPosUnity.y);
                 Quaternion localRotUnity = Quaternion.Inverse(robotBase.rotation) * pose.Rotation;
 
-                // Axis swap for rotation (basic swap Y/Z)
-                Quaternion localRotUR = new Quaternion(
-                    localRotUnity.x,
-                    localRotUnity.z,  // swap
-                    localRotUnity.y,  // swap
-                    localRotUnity.w
-                );
+                // Convert to axis-angle rotation vector
+                Vector3 rvec = QuaternionToRotationVector(localRotUnity);
 
                 string waypointJson = $"{{\"x\":{localPosUR.x},\"y\":{localPosUR.y},\"z\":{localPosUR.z}," +
-                                      $"\"qx\":{localRotUR.x},\"qy\":{localRotUR.y},\"qz\":{localRotUR.z},\"qw\":{localRotUR.w}}}";
-
+                                      $"\"rx\":{rvec.x},\"ry\":{rvec.y},\"rz\":{rvec.z}}}";
                 localWaypoints.Add(waypointJson);
-                Debug.Log("Waypoint saved locally (UR coords): " + waypointJson);
 
+                Debug.Log("Waypoint (UR coords with rotation vector): " + waypointJson);
+
+                Debug.Log($"waypoint world pose: {pose.Position}");
+                Debug.Log($"Robot base position: {robotBase.position}");
                 lastPlaceTime = Time.time;
-                //waypointManager.AddWaypoint(pose.Position, pose.Rotation);
-
-                //Vector3 localPos = robotBase.InverseTransformPoint(pose.Position);
-                //Quaternion localRot = Quaternion.Inverse(robotBase.rotation) * pose.Rotation;
-
-                //string waypointJson = $"{{\"x\":{localPos.x},\"y\":{localPos.y},\"z\":{localPos.z}," +
-                //                      $"\"qx\":{localRot.x},\"qy\":{localRot.y},\"qz\":{localRot.z},\"qw\":{localRot.w}}}";
-
-                //localWaypoints.Add(waypointJson);
-                //Debug.Log("Waypoint saved locally: " + waypointJson);
-
-                //lastPlaceTime = Time.time;
             }
         }
         else
@@ -140,13 +205,29 @@ public class FingerWaypointPlacer : MonoBehaviour
         }
     }
 
+    // Convert Quaternion → axis-angle vector for UR10
+    private Vector3 QuaternionToRotationVector(Quaternion q)
+    {
+        // Ensure quaternion is normalized
+        if (q.w > 1) q.Normalize();
+
+        float angle = 2.0f * Mathf.Acos(q.w);
+        float s = Mathf.Sqrt(1 - q.w * q.w);
+
+        // Avoid divide by zero
+        if (s < 0.001f)
+            return new Vector3(q.x, q.y, q.z) * angle;
+        else
+            return new Vector3(q.x / s, q.y / s, q.z / s) * angle;
+    }
+
+
     private bool IsPinching(Handedness hand)
     {
         if (HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, hand, out MixedRealityPose indexPose) &&
             HandJointUtils.TryGetJointPose(TrackedHandJoint.ThumbTip, hand, out MixedRealityPose thumbPose))
         {
-            float distance = Vector3.Distance(indexPose.Position, thumbPose.Position);
-            return distance < 0.02f;
+            return Vector3.Distance(indexPose.Position, thumbPose.Position) < 0.02f;
         }
         return false;
     }
@@ -160,19 +241,15 @@ public class FingerWaypointPlacer : MonoBehaviour
         {
             Vector3 leftPos = leftPose.Position;
             Vector3 rightPos = rightPose.Position;
-
             float distance = Vector3.Distance(leftPos, rightPos);
-
             float leftSpeed = Vector3.Distance(leftPos, lastLeftPos);
             float rightSpeed = Vector3.Distance(rightPos, lastRightPos);
             float approachSpeed = (leftSpeed + rightSpeed) / Time.deltaTime;
 
-            if (distance < clapDistanceThreshold && approachSpeed > clapSpeedThreshold)
-            {
-                return true;
-            }
             lastLeftPos = leftPos;
             lastRightPos = rightPos;
+
+            return distance < clapDistanceThreshold && approachSpeed > clapSpeedThreshold;
         }
         return false;
     }
@@ -186,8 +263,6 @@ public class FingerWaypointPlacer : MonoBehaviour
         }
 
         string jsonArray = "[" + string.Join(",", localWaypoints) + "]";
-        Debug.Log("Preparing to send waypoints:\n" + jsonArray);
-
         byte[] data = Encoding.UTF8.GetBytes(jsonArray + "\n");
 
         try
@@ -195,27 +270,22 @@ public class FingerWaypointPlacer : MonoBehaviour
             using (TcpClient client = new TcpClient(serverIP, serverPort))
             using (NetworkStream stream = client.GetStream())
             {
-                Debug.Log("Sent all waypoints: " + jsonArray);
                 stream.Write(data, 0, data.Length);
+                Debug.Log("Sent all waypoints: " + jsonArray);
             }
         }
         catch (SocketException e)
         {
             Debug.LogError("Send failed: " + e.Message);
         }
-
-        //localWaypoints.Clear();
     }
+    #endregion
 
     private void SetPhase(PlacementPhase newPhase)
     {
         currentPhase = newPhase;
-
-        // Only show calibration canvas in Calibration phase
         if (calibrationCanvas != null)
             calibrationCanvas.SetActive(newPhase == PlacementPhase.Calibration);
-
-        // Preview waypoint indicator only in Waypoint phase
         if (previewInstance != null)
             previewInstance.SetActive(newPhase == PlacementPhase.Waypoint);
     }

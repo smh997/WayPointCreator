@@ -3471,52 +3471,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1237506055
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1237506057}
-  - component: {fileID: 1237506056}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1237506056
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1237506055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c459cb3ed4a1e08468a04d1776b40228, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  robotTransform: {fileID: 1726824835}
-  relativePosition: {x: 0, y: 0, z: 0}
---- !u!4 &1237506057
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1237506055}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.126, y: 1.5048, z: 1.7534}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1297005661
 GameObject:
   m_ObjectHideFlags: 0
@@ -3854,6 +3808,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4683462986423825463, guid: b0191903a57e4a9438427105b9a331bf,
     type: 3}
   m_PrefabInstance: {fileID: 1528436298}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1531062767 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4274757450511075433, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
+    type: 3}
+  m_PrefabInstance: {fileID: 2097354043}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1552548723 stripped
 MonoBehaviour:
@@ -4260,12 +4220,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHeld: 0
---- !u!4 &1726824835 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9090806214205759992, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
-    type: 3}
-  m_PrefabInstance: {fileID: 2097354043}
-  m_PrefabAsset: {fileID: 0}
 --- !u!65 &1726824836
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4377,11 +4331,12 @@ MonoBehaviour:
   waypointManager: {fileID: 1417198990}
   waypointPreviewPrefab: {fileID: 4314576276785413227, guid: f9b5a837d4b619749a0031818d2ca933,
     type: 3}
-  robotBase: {fileID: 1726824835}
+  robotBase: {fileID: 1531062767}
   calibrationCanvas: {fileID: 1495308279}
+  robotController: {fileID: 2141120139}
   handToUse: 2
   pinchCooldown: 0.5
-  serverIP: 192.168.0.104
+  serverIP: 192.168.0.100
   serverPort: 5000
   clapDistanceThreshold: 0.1
   clapSpeedThreshold: 0.05
@@ -4989,7 +4944,7 @@ PrefabInstance:
     - target: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
         type: 3}
       propertyPath: _worldTransform.e00
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
         type: 3}
@@ -5024,12 +4979,12 @@ PrefabInstance:
     - target: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
         type: 3}
       propertyPath: _worldTransform.e22
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
         type: 3}
       propertyPath: _worldTransform.e23
-      value: 2.29
+      value: 0.849
       objectReference: {fileID: 0}
     - target: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
         type: 3}
@@ -5399,18 +5354,18 @@ MonoBehaviour:
         e33: 1
     _toolCenterPointWorld:
       _value:
-        e00: -0.00000040133935
-        e01: 1
-        e02: 1.1280497e-13
-        e03: 0.2561412
+        e00: 0.00000040133935
+        e01: -1
+        e02: -1.1280497e-13
+        e03: -0.2561412
         e10: -1
         e11: -0.00000040133935
         e12: 0.0000006993822
         e13: 1.0515996
-        e20: 0.0000006993822
-        e21: 1.930824e-13
-        e22: 1
-        e23: 1.1057001
+        e20: -0.0000006993822
+        e21: -1.930824e-13
+        e22: -1
+        e23: 2.0333
         e30: 0
         e31: 0
         e32: 0
@@ -5428,7 +5383,7 @@ MonoBehaviour:
         e20: 0.0000006993822
         e21: 1.930824e-13
         e22: 1
-        e23: -1.1842998
+        e23: -1.1843
         e30: 0
         e31: 0
         e32: 0
@@ -5533,4 +5488,3 @@ SceneRoots:
   - {fileID: 318117648}
   - {fileID: 1417198991}
   - {fileID: 1892534786}
-  - {fileID: 1237506057}
