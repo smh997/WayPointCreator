@@ -10,9 +10,12 @@ public class Waypoint : MonoBehaviour
     public Vector3 tcpPosition;
     public Quaternion tcpRotation;
 
+    private WaypointManager manager;
+
     void Awake()
     {
-        orderText =  GetComponentInChildren<TextMeshProUGUI>();
+        orderText = GetComponentInChildren<TextMeshProUGUI>();
+        manager = FindObjectOfType<WaypointManager>();
     }
 
     public void SetOrder(int index)
@@ -26,5 +29,17 @@ public class Waypoint : MonoBehaviour
     {
         tcpPosition = transform.position;
         tcpRotation = transform.rotation;
+
     }
+
+
+    public void OnHandDelete()
+    {
+        if (manager != null && manager.DeleteMode)
+        {
+            manager.RemoveWaypoint(this);
+        }
+    }
+
+
 }

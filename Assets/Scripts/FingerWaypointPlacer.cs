@@ -28,6 +28,7 @@ public class FingerWaypointPlacer : MonoBehaviour
     public Transform robotBase;
     //public Transform robotEndEffector;
     public GameObject calibrationCanvas;
+    public GameObject WaypointCanvas;
     public Controller robotController; // assign your controller here
     private Robot robot;
 
@@ -166,7 +167,7 @@ public class FingerWaypointPlacer : MonoBehaviour
     #region Waypoint Placement
     private void HandleWaypointPlacement()
     {
-        if (HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, handToUse, out MixedRealityPose pose))
+        if (!waypointManager.DeleteMode && HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, handToUse, out MixedRealityPose pose))
         {
             if (previewInstance != null)
             {
@@ -284,9 +285,18 @@ public class FingerWaypointPlacer : MonoBehaviour
     private void SetPhase(PlacementPhase newPhase)
     {
         currentPhase = newPhase;
+
         if (calibrationCanvas != null)
             calibrationCanvas.SetActive(newPhase == PlacementPhase.Calibration);
+
         if (previewInstance != null)
-            previewInstance.SetActive(newPhase == PlacementPhase.Waypoint);
+        {
+            bool showPreview = newPhase == PlacementPhase.Waypoint
+                               && !waypointManager.DeleteMode; // only show preview if creating
+            previewInstance.SetActive(showPreview);
+        }
+        if (WaypointCanvas != null)
+            WaypointCanvas.SetActive(newPhase == PlacementPhase.Waypoint);
     }
+
 }
