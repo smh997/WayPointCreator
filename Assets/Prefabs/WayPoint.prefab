@@ -623,7 +623,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -639,7 +639,8 @@ GameObject:
   - component: {fileID: 6110420140886273010}
   - component: {fileID: 2420696701718501267}
   - component: {fileID: 2460963981946734089}
-  - component: {fileID: -3209981856705911812}
+  - component: {fileID: 4847022847083107382}
+  - component: {fileID: 7886348730644579012}
   m_Layer: 0
   m_Name: WayPoint
   m_TagString: Untagged
@@ -695,13 +696,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.11608024, y: 0.1483343, z: 0.10016561}
   m_Center: {x: 0.0003280242, y: -0.030361712, z: 0.0019256274}
---- !u!114 &-3209981856705911812
+--- !u!114 &4847022847083107382
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -710,7 +711,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 4314576276785413227}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 389862a63b7acaa4aae2acd7cac5eff6, type: 3}
+  m_Script: {fileID: 11500000, guid: 183e8dd8b58276c4a8f2b807059981b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventsToReceive: 0
+  debounceThreshold: 0.01
+  touchableCollider: {fileID: 2460963981946734089}
+--- !u!114 &7886348730644579012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4314576276785413227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 772f9d0a9d375034bb4b40b01c0b439c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4706591978053804690
@@ -948,7 +964,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

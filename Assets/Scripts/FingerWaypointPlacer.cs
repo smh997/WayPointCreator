@@ -37,7 +37,7 @@ public class FingerWaypointPlacer : MonoBehaviour
     public float pinchCooldown = 0.5f;
 
     [Header("Networking")]
-    public string serverIP = "192.168.0.100";
+    public string serverIP = "192.168.0.101";
     public int serverPort = 5000;
 
     [Header("Clap Gesture Settings")]
