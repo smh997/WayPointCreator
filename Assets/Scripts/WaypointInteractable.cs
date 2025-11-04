@@ -1,25 +1,25 @@
 using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using UnityEngine;
 
 [RequireComponent(typeof(Waypoint))]
 public class WaypointInteractable : MonoBehaviour, IMixedRealityPointerHandler, IMixedRealityTouchHandler
 {
-    private Waypoint waypoint;
-
     private WaypointManager manager;
+    private Waypoint waypoint;
+    
 
     private void Awake()
     {
-        waypoint = GetComponent<Waypoint>();
         manager = FindObjectOfType<WaypointManager>();
-        Debug.Log($"SMHLOG: {manager.DeleteMode}");
+        waypoint = GetComponent<Waypoint>();
     }
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {
-        Debug.Log("SMHLOG!!!");
         Debug.Log("Waypoint clicked: " + gameObject.name);
-        if (manager.DeleteMode)
+        if (manager.Mode == WaypointMode.Delete)
         {
             manager.RemoveWaypoint(waypoint);
         }
@@ -32,11 +32,14 @@ public class WaypointInteractable : MonoBehaviour, IMixedRealityPointerHandler, 
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
-        Debug.Log("Yes! SMHLOG!!!");
         Debug.Log("Waypoint touched: " + gameObject.name);
-        if (manager.DeleteMode)
+        if (manager.Mode == WaypointMode.Delete)
         {
             manager.RemoveWaypoint(waypoint);
+        }
+        else if (manager.Mode == WaypointMode.Edit)
+        {
+            manager.StartEdit(waypoint);
         }
         eventData.Use();
     }

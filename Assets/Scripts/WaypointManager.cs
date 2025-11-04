@@ -4,15 +4,25 @@ using TMPro;
 using UnityEngine.UI;
 using Microsoft.MixedReality.Toolkit.UI;
 
+public enum WaypointMode
+{
+    Create,
+    Edit,
+    Delete
+}
+
 public class WaypointManager : MonoBehaviour
 {
     public GameObject waypointPrefab;
     private List<Waypoint> waypoints = new List<Waypoint>();
     public TextMeshProUGUI statusText;
-    public PressableButtonHoloLens2 deleteAllButton; // UI button in panel
+    public PressableButtonHoloLens2 deleteAllButton;
+    public PressableButtonHoloLens2 doneEditButton;
+    private Waypoint currentEditingWaypoint;
 
-    public bool DeleteMode { get; private set; } = false;
-    private const int MAX_WAYPOINTS = 2;
+    public WaypointMode Mode { get; private set; } = WaypointMode.Create;
+
+    private const int MAX_WAYPOINTS = 5;
 
     private void Start()
     {
@@ -20,17 +30,25 @@ public class WaypointManager : MonoBehaviour
         UpdateStatus("Create mode active. Tap to add waypoints.");
     }
 
-    public void SetDeleteMode(bool isDelete)
+    public void SetMode(WaypointMode newMode)
     {
-        DeleteMode = isDelete;
-        UpdateStatus(DeleteMode
-            ? "Delete mode active. Tap waypoints to remove."
-            : "Create mode active. Tap to add waypoints.");
+        Mode = newMode;
+        Debug.Log("Waypoint mode changed to: " + Mode);
+        UpdateStatus((Mode == WaypointMode.Delete) ? "Delete mode active. Tap waypoints to remove." : 
+                     (Mode == WaypointMode.Create) ? "Create mode active. Tap to add waypoints." : 
+                     "Edit mode active. Tap waypoints to edit.");
+        foreach (var waypoint in waypoints)
+        {
+            if (Mode == WaypointMode.Delete)
+                waypoint.setColor();
+            else
+                waypoint.resetColor();
+        }
     }
 
     public void AddWaypoint(Vector3 position, Quaternion rotation)
     {
-        if (DeleteMode)
+        if (Mode != WaypointMode.Create)
         {
             UpdateStatus("Switch to Create mode to add waypoints.");
             return;
@@ -47,6 +65,21 @@ public class WaypointManager : MonoBehaviour
         waypoints.Add(wp);
         RefreshOrders();
         UpdateStatus($"Waypoint {waypoints.Count} created.");
+    }
+
+    public void StartEdit (Waypoint waypoint)
+    {
+        doneEditButton.gameObject.SetActive(true);
+        waypoint.StartEditing();
+        currentEditingWaypoint = waypoint;
+    }
+
+    public void StopEdit ()
+    {
+        doneEditButton?.gameObject.SetActive(false);
+        if (currentEditingWaypoint != null)
+            currentEditingWaypoint.StopEditing();
+        currentEditingWaypoint = null;
     }
 
     public void RemoveWaypoint(Waypoint wp)

@@ -1,4 +1,4 @@
-using Microsoft.MixedReality.Toolkit.UI;
+﻿using Microsoft.MixedReality.Toolkit.UI;
 using TMPro;
 using UnityEngine;
 
@@ -7,42 +7,54 @@ public class ModeToggleController : MonoBehaviour
     [Header("References")]
     public WaypointManager waypointManager;
     public PressableButtonHoloLens2 toggleButton;
+    public PressableButtonHoloLens2 deleteAllButton;
     public TextMeshPro labelText;
-
-    private bool deleteMode = false;
 
     private void Start()
     {
-        // Initialize label
+        // Initialize label and hook up listener
         UpdateLabel();
-
-        // Add listener to the button
-        toggleButton.ButtonPressed.AddListener(ToggleMode);
+        toggleButton.ButtonPressed.AddListener(CycleMode);
     }
 
-    private void ToggleMode()
+    private void CycleMode()
     {
-        // Switch mode
-        deleteMode = !deleteMode;
+        // Cycle through Create → Edit → Delete → back to Create
+        WaypointMode nextMode = waypointManager.Mode switch
+        {
+            WaypointMode.Create => WaypointMode.Edit,
+            WaypointMode.Edit => WaypointMode.Delete,
+            WaypointMode.Delete => WaypointMode.Create,
+            _ => WaypointMode.Create
+        };
 
-        // Update visuals
+        waypointManager.SetMode(nextMode);
         UpdateLabel();
-
-        // Notify WaypointManager
-        waypointManager.SetDeleteMode(deleteMode);
     }
 
     private void UpdateLabel()
     {
-        if (deleteMode)
+        switch (waypointManager.Mode)
         {
-            labelText.text = "Delete Mode";
-            labelText.color = Color.red;
-        }
-        else
-        {
-            labelText.text = "Create Mode";
-            labelText.color = Color.green;
+            case WaypointMode.Create:
+                labelText.text = "Create Mode";
+                labelText.color = Color.green;
+                deleteAllButton.gameObject.SetActive(false);
+                break;
+
+            case WaypointMode.Edit:
+                labelText.text = "Edit Mode";
+                labelText.color = Color.yellow;
+                deleteAllButton.gameObject.SetActive(false);
+                break;
+
+            case WaypointMode.Delete:
+                labelText.text = "Delete Mode";
+                labelText.color = Color.red;
+                deleteAllButton.gameObject.SetActive(true);
+                break;
         }
     }
+
+
 }

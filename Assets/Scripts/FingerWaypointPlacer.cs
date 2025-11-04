@@ -37,7 +37,7 @@ public class FingerWaypointPlacer : MonoBehaviour
     public float pinchCooldown = 0.5f;
 
     [Header("Networking")]
-    public string serverIP = "192.168.0.101";
+    public string serverIP = "192.168.0.100";
     public int serverPort = 5000;
 
     [Header("Clap Gesture Settings")]
@@ -46,7 +46,6 @@ public class FingerWaypointPlacer : MonoBehaviour
 
     private GameObject previewInstance;
     private float lastPlaceTime = 0f;
-    private List<string> localWaypoints = new List<string>();
 
     private Vector3 lastLeftPos;
     private Vector3 lastRightPos;
@@ -167,7 +166,7 @@ public class FingerWaypointPlacer : MonoBehaviour
     #region Waypoint Placement
     private void HandleWaypointPlacement()
     {
-        if (!waypointManager.DeleteMode && HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, handToUse, out MixedRealityPose pose))
+        if (waypointManager.Mode == WaypointMode.Create && HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, handToUse, out MixedRealityPose pose))
         {
             if (previewInstance != null)
             {
@@ -190,7 +189,7 @@ public class FingerWaypointPlacer : MonoBehaviour
 
                 string waypointJson = $"{{\"x\":{localPosUR.x},\"y\":{localPosUR.y},\"z\":{localPosUR.z}," +
                                       $"\"rx\":{rvec.x},\"ry\":{rvec.y},\"rz\":{rvec.z}}}";
-                localWaypoints.Add(waypointJson);
+                //localWaypoints.Add(waypointJson);
 
                 Debug.Log("Waypoint (UR coords with rotation vector): " + waypointJson);
 
@@ -257,10 +256,25 @@ public class FingerWaypointPlacer : MonoBehaviour
 
     public void SendAllWaypoints()
     {
-        if (localWaypoints.Count == 0)
+
+        if (waypointManager.GetWaypoints().Count == 0)
         {
             Debug.Log("No waypoints to send.");
             return;
+        }
+        
+        List<string> localWaypoints = new List<string>();
+
+        foreach (var wp in waypointManager.GetWaypoints())
+        {
+            Vector3 localPosUnity = robotBase.InverseTransformPoint(wp.transform.position);
+            Vector3 localPosUR = new Vector3(-localPosUnity.z, -localPosUnity.x, localPosUnity.y);
+            Quaternion localRotUnity = Quaternion.Inverse(robotBase.rotation) * wp.transform.rotation;
+            Vector3 rvec = QuaternionToRotationVector(localRotUnity);
+
+            string waypointJson = $"{{\"x\":{localPosUR.x},\"y\":{localPosUR.y},\"z\":{localPosUR.z}," +
+                                  $"\"rx\":{rvec.x},\"ry\":{rvec.y},\"rz\":{rvec.z}}}";
+            localWaypoints.Add(waypointJson);
         }
 
         string jsonArray = "[" + string.Join(",", localWaypoints) + "]";
@@ -292,7 +306,7 @@ public class FingerWaypointPlacer : MonoBehaviour
         if (previewInstance != null)
         {
             bool showPreview = newPhase == PlacementPhase.Waypoint
-                               && !waypointManager.DeleteMode; // only show preview if creating
+                               && waypointManager.Mode == WaypointMode.Create; // only show preview if creating
             previewInstance.SetActive(showPreview);
         }
         if (WaypointCanvas != null)
