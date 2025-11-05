@@ -1,4 +1,5 @@
 ﻿using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Preliy.Flange;
 using System.Collections.Generic;
@@ -268,7 +269,9 @@ public class FingerWaypointPlacer : MonoBehaviour
         foreach (var wp in waypointManager.GetWaypoints())
         {
             Vector3 localPosUnity = robotBase.InverseTransformPoint(wp.transform.position);
-            Vector3 localPosUR = new Vector3(-localPosUnity.z, -localPosUnity.x, localPosUnity.y);
+            Vector3 localPosUR = new Vector3(localPosUnity.z, -localPosUnity.x, localPosUnity.y);
+            //Vector3 localPosUR = new Vector3(-localPosUnity.x, -localPosUnity.z, localPosUnity.y);
+            Debug.Log($"waypoint {wp.orderText}: unity({localPosUnity.x}, {localPosUnity.y}, {localPosUnity.z})\n real({localPosUR.x}, {localPosUR.y}, {localPosUR.z})");
             Quaternion localRotUnity = Quaternion.Inverse(robotBase.rotation) * wp.transform.rotation;
             Vector3 rvec = QuaternionToRotationVector(localRotUnity);
 
@@ -311,6 +314,10 @@ public class FingerWaypointPlacer : MonoBehaviour
         }
         if (WaypointCanvas != null)
             WaypointCanvas.SetActive(newPhase == PlacementPhase.Waypoint);
+
+        ObjectManipulator objectManipulator = robotController.MechanicalGroup.Robot.GetComponent<ObjectManipulator>();
+        if (objectManipulator != null)
+            objectManipulator.enabled = (newPhase == PlacementPhase.Calibration);
     }
 
 }
