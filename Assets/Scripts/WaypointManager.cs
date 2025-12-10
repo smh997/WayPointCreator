@@ -8,7 +8,8 @@ public enum WaypointMode
 {
     Create,
     Edit,
-    Delete
+    Delete,
+    Idle
 }
 
 public class WaypointManager : MonoBehaviour
@@ -20,7 +21,7 @@ public class WaypointManager : MonoBehaviour
     public PressableButtonHoloLens2 doneEditButton;
     private Waypoint currentEditingWaypoint;
 
-    public WaypointMode Mode { get; private set; } = WaypointMode.Create;
+    public WaypointMode Mode { get; private set; } = WaypointMode.Idle;
 
     private const int MAX_WAYPOINTS = 5;
 
