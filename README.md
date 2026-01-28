@@ -15,7 +15,6 @@ This repository contains the **full implementation used in our IEEE paper**, inc
 ## 🎥 Demo — Real System, Real Robot
 
 ### End-to-End Video Demonstration
-*(Waypoint Determination → Preview → Execute)*
 
 <video src="https://github.com/user-attachments/assets/7131f410-4359-4fb6-807a-7c5980cb8481" controls="controls" muted loop></video>
 
