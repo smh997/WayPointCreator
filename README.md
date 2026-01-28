@@ -20,6 +20,10 @@ This repository contains the **full implementation used in our IEEE paper**, inc
 ▶️ [Watch the demo video 1](Recordings/ARUR.mp4)
 ▶️ [Watch the demo video 2](Recordings/twin%20-%20execute.mp4)
 
+<video src="https://github.com/user-attachments/assets/7131f410-4359-4fb6-807a-7c5980cb8481" controls="controls" muted loop></video>
+
+<video src="https://github.com/user-attachments/assets/66765f32-38c3-42ca-b44d-efe8e6e6dc73" controls="controls" muted loop></video>
+
 ---
 
 ### System in Use (Representative Figures)
