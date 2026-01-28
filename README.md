@@ -17,8 +17,8 @@ This repository contains the **full implementation used in our IEEE paper**, inc
 ### End-to-End Video Demonstration
 *(Waypoint Determination → Preview → Execute)*
 
-📹 **Demo video placeholder**  
-(Add link here)
+▶️ [Watch the demo video 1](Recordings/ARUR.mp4)
+▶️ [Watch the demo video 2](Recordings/twin%20-%20execute.mp4)
 
 ---
 
@@ -29,25 +29,34 @@ These images correspond directly to the system described and demonstrated in the
 **Figure 1 — AR Waypoint Determination**  
 Users place and edit 6-DoF waypoints directly in 3D space using hand interaction on HoloLens 2.
 
-📷 *(Insert image: AR scene with waypoints and UR10 digital twin)*
+<p>
+  <img src="Recordings/interface/20251211_092337_HoloLens.jpg" width="400">
+   <img src="Recordings/interface/20251211_092617_HoloLens.jpg" width="400">
+</p>
 
 ---
 
 **Figure 2 — Digital Twin Preview (Preview-before-Execute)**  
 The authored trajectory is animated on a synchronized UR10 digital twin before execution.
 
-📷 *(Insert image: animated trajectory preview)*
+<p>
+   <img src="Recordings/preview1.jpg" width="400">
+   <img src="Recordings/preview2.jpg" width="400">
+</p>
 
 ---
 
 **Figure 3 — Physical Execution on UR10**  
 The validated trajectory is executed on the real UR10 robot in a lab workspace.
 
-📷 *(Insert image: UR10 executing trajectory)*
+<p>
+   <img src="Recordings/exe1.png" width="400">
+   <img src="Recordings/exe2.png" width="400">
+</p>
 
 ---
 
-## 🧠 System Overview
+## System Overview
 
 AURaPath enables users to **select robot motion directly in the workspace** using augmented reality rather than traditional teach pendants or offline programming tools.
 
@@ -71,7 +80,7 @@ This workflow supports intuitive spatial programming while reducing trial-and-er
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 
 ### HoloLens 2 (AR Client)
@@ -94,7 +103,19 @@ This separation allows the AR device to focus on interaction and visualization, 
 
 ---
 
-## 🧰 Hardware Requirements
+## 🖥️ AR Interface Screenshots
+
+Additional screenshots of the AR user interface, including waypoint manipulation,
+menus, and interaction widgets, are available in:
+
+[Recordings/interface/](Recordings/interface/)
+
+These images document the full interaction design and UI elements used in the system
+and correspond to the interfaces described in the paper.
+
+---
+
+## Hardware Requirements
 
 The current implementation of AURaPath has been validated using the following hardware:
 
@@ -112,7 +133,7 @@ The current implementation of AURaPath has been validated using the following ha
 
 ---
 
-## 💻 Software Requirements
+## Software Requirements
 
 ### AR Client (HoloLens 2)
 - **Unity** (with Universal Windows Platform support enabled)
