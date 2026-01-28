@@ -131,23 +131,46 @@ The current implementation of AURaPath has been validated using the following ha
 
 ---
 
-## ⚙️ Setup Instructions
+### 2. PC Middleware Server Setup
 
-### 1. UR10 Robot Setup
 1. Power on the UR10 robot and controller
-2. Ensure the robot is in a mode that allows external control
+2. Ensure the robot is in Remote mode to allow external control
 3. Connect the robot controller to the PC via Ethernet
 4. Note the robot IP address (static IP is recommended)
 
----
 
-### 2. PC Middleware Server Setup
+The PC middleware server is responsible for receiving waypoint data from the HoloLens 2, transforming poses into the UR10 base frame, and transmitting executable commands to the robot controller.
 
-(TODO)
-<!-- ```bash
+#### Prerequisites
+- A PC connected to the **UR10 controller via Ethernet**
+- Network connectivity to the **HoloLens 2** (same LAN/Wi-Fi)
+- **Python 3.x** installed
+- **URSocket package is installed using pip.
+
+> ⚠️ No additional third-party Python packages are required.  
+> The server implementation relies only on standard Python libraries and URSocket
+> communication supported by the UR controller.
+
+#### Running the Server
+
+1. Navigate to the server directory:
+```bash
 cd Server
-pip install -r requirements.txt
-python server.py
--->
+```
+2. Start the middleware server:
 
+```bash
+python server.py
+```
+
+3. Before execution, ensure that:
+
+- The UR10 IP address configured in server.py matches the robot controller
+
+- The robot is powered on and ready to accept external commands
+
+- Network firewalls allow communication between the PC, robot, and HoloLens 2
+
+Once running, the server listens for incoming waypoint data from the AR client and manages
+trajectory validation and execution on the physical robot.
 
