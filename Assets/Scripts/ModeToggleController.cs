@@ -17,6 +17,18 @@ public class ModeToggleController : MonoBehaviour
         toggleButton.ButtonPressed.AddListener(CycleMode);
     }
 
+    /// <summary>
+    /// Set the waypoint mode from an external source (e.g. voice) and keep the
+    /// button label/color and Delete-All visibility in sync. Both the button
+    /// (CycleMode) and voice now route mode changes through this controller, so
+    /// the UI can never desync from WaypointManager.Mode.
+    /// </summary>
+    public void SetModeExternally(WaypointMode mode)
+    {
+        waypointManager.SetMode(mode);
+        UpdateLabel();
+    }
+
     private void CycleMode()
     {
         // Cycle through Create → Edit → Delete → back to Create

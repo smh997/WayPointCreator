@@ -12691,6 +12691,70 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2097354043}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1544790303
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1544790305}
+  - component: {fileID: 1544790304}
+  - component: {fileID: 1544790306}
+  m_Layer: 0
+  m_Name: VoiceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1544790304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544790303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 547b60ef2aae4f74eabb8fd720741595, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuManager: {fileID: 1892534787}
+  operationsManager: {fileID: 1892534785}
+  modeToggle: {fileID: 1685630290}
+  stopController: {fileID: 0}
+  armTimeoutSeconds: 8
+  voiceStatusText: {fileID: 0}
+--- !u!4 &1544790305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544790303}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1544790306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544790303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3da246919aa00d145b7e450769265a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  router: {fileID: 1544790304}
 --- !u!114 &1552548723 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1843392791439031821, guid: 3d5fe3c26d8d64c4299905607aa3c5ae,
@@ -19690,3 +19754,4 @@ SceneRoots:
   - {fileID: 1892534786}
   - {fileID: 1685630291}
   - {fileID: 97152366}
+  - {fileID: 1544790305}
