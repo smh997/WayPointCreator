@@ -37,7 +37,7 @@ import urllib.request
 import urllib.error
 
 # Import the FROZEN prompt from Backend B so the two backends stay identical.
-from backend_b_ollama import SYSTEM_PROMPT
+from backend_b_ollama import SYSTEM_PROMPT, get_prompt
 
 API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -101,7 +101,7 @@ RESPONSE_SCHEMA = {
 }
 
 
-def build_payload(utterance, model=""):
+def build_payload(utterance, model="", few_shot=False):
     cfg = {
         "temperature": 0,
         "responseMimeType": "application/json",
@@ -117,20 +117,20 @@ def build_payload(utterance, model=""):
     if "gemini-3" in model:
         cfg["thinkingConfig"] = {"thinkingBudget": 0}
     return {
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "systemInstruction": {"parts": [{"text": get_prompt(few_shot)}]},
         "contents": [{"role": "user", "parts": [{"text": utterance}]}],
         "generationConfig": cfg,
     }
 
 
-def call_gemini(model, api_key, utterance, max_retries=6):
+def call_gemini(model, api_key, utterance, max_retries=6, few_shot=False):
     """Return (obj_or_None, latency_of_successful_call, raw_text).
 
     Retries on 429 / 5xx with exponential backoff. The returned latency covers
     ONLY the successful request -- backoff sleeps are deliberately excluded.
     """
     url = f"{API_ROOT}/{model}:generateContent"
-    data = json.dumps(build_payload(utterance, model)).encode("utf-8")
+    data = json.dumps(build_payload(utterance, model, few_shot)).encode("utf-8")
 
     delay = 5.0
     for attempt in range(max_retries):
@@ -250,6 +250,8 @@ def main():
     ap.add_argument("--rpm", type=float, default=10.0,
                     help="requests per minute to pace at (free tier is ~10-15)")
     ap.add_argument("--limit", type=int, default=None, help="smoke test on first N rows")
+    ap.add_argument("--few-shot", action="store_true",
+                    help="append the (disjoint) few-shot example block to the prompt")
     args = ap.parse_args()
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -267,7 +269,8 @@ def main():
 
     min_gap = 60.0 / args.rpm  # seconds between request starts
     est_min = len(rows) * min_gap / 60.0
-    print(f"Backend D — {args.model}")
+    mode = "few-shot" if args.few_shot else "zero-shot"
+    print(f"Backend D — {args.model}  [{mode}]")
     print(f"  {len(rows)} utterances, paced at {args.rpm:.0f} RPM "
           f"(~{min_gap:.1f}s apart) -> ~{est_min:.0f} min\n", flush=True)
 
@@ -283,7 +286,8 @@ def main():
             time.sleep(wait)
         last_start = time.perf_counter()
 
-        obj, dt, raw = call_gemini(args.model, api_key, r["utterance"])
+        obj, dt, raw = call_gemini(args.model, api_key, r["utterance"],
+                                   few_shot=args.few_shot)
         obj = normalize(obj)
 
         if obj is None or "type" not in obj:

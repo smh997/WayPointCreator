@@ -137,11 +137,24 @@ Do not guess. If a required field for the operation is missing from the command,
 Set fields that do not apply to null."""
 
 
-def build_payload(model, utterance):
+def get_prompt(few_shot=False):
+    """Return the system prompt, optionally with the few-shot example block appended.
+
+    The examples come from fewshot_pool.jsonl, which is DISJOINT from dataset.jsonl
+    (enforced by an assertion in build_fewshot.py). Zero-shot remains the default so
+    that few-shot vs. zero-shot is a clean ablation rather than a silent change.
+    """
+    if not few_shot:
+        return SYSTEM_PROMPT
+    from build_fewshot import build_prompt_block
+    return SYSTEM_PROMPT + "\n" + build_prompt_block()
+
+
+def build_payload(model, utterance, few_shot=False):
     return {
         "model": model,
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": get_prompt(few_shot)},
             {"role": "user", "content": utterance},
         ],
         "stream": False,
@@ -154,9 +167,9 @@ def build_payload(model, utterance):
     }
 
 
-def call_ollama(model, utterance, timeout=120):
+def call_ollama(model, utterance, timeout=120, few_shot=False):
     """Returns (parsed_obj_or_None, latency_seconds, raw_text)."""
-    payload = json.dumps(build_payload(model, utterance)).encode("utf-8")
+    payload = json.dumps(build_payload(model, utterance, few_shot)).encode("utf-8")
     req = urllib.request.Request(
         OLLAMA_URL, data=payload,
         headers={"Content-Type": "application/json"},
@@ -205,6 +218,8 @@ def main():
     ap.add_argument("--warmup", action="store_true",
                     help="send one throwaway call first so cold-load time is not in the stats")
     ap.add_argument("--limit", type=int, default=None, help="only run first N rows (smoke test)")
+    ap.add_argument("--few-shot", action="store_true",
+                    help="append the (disjoint) few-shot example block to the prompt")
     args = ap.parse_args()
 
     rows = []
@@ -217,7 +232,7 @@ def main():
 
     if args.warmup:
         print(f"Warming up {args.model} ...", flush=True)
-        _, dt, _ = call_ollama(args.model, "warm up")
+        _, dt, _ = call_ollama(args.model, "warm up", few_shot=args.few_shot)
         print(f"  cold call took {dt:.2f}s (excluded from results)\n", flush=True)
 
     out = []
@@ -225,7 +240,7 @@ def main():
     t_start = time.perf_counter()
 
     for i, r in enumerate(rows, 1):
-        obj, dt, raw = call_ollama(args.model, r["utterance"])
+        obj, dt, raw = call_ollama(args.model, r["utterance"], few_shot=args.few_shot)
         obj = normalize(obj)
         if obj is None or "type" not in obj:
             malformed += 1
@@ -248,7 +263,8 @@ def main():
     lat = [o["latency_s"] for o in out]
     lat.sort()
     p95 = lat[min(len(lat) - 1, int(round(0.95 * (len(lat) - 1))))]
-    print(f"\nBackend B — {args.model}")
+    mode = "few-shot" if args.few_shot else "zero-shot"
+    print(f"\nBackend B — {args.model}  [{mode}]")
     print(f"  wrote {len(out)} predictions -> {args.out}")
     print(f"  malformed outputs: {malformed}")
     print(f"  latency  mean {sum(lat)/len(lat):.3f}s   "

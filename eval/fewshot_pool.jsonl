@@ -1,0 +1,13 @@
+{"utterance": "move waypoint 3 up by 10 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "z", "offset": 0.1}, "demonstrates": "up -> +z"}
+{"utterance": "move waypoint 1 down by 6 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "z", "offset": -0.06}, "demonstrates": "down -> -z"}
+{"utterance": "move waypoint 4 to the right by 8 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "y", "offset": -0.08}, "demonstrates": "right -> -y (UR10 base frame)"}
+{"utterance": "rotate waypoint 2 by 45 degrees around z", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "rz", "offset": 0.785398}, "demonstrates": "degrees -> radians"}
+{"utterance": "move the last waypoint up by 3 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "z", "offset": 0.03}, "demonstrates": "reference \"last\""}
+{"utterance": "create a waypoint", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "demonstrates": "create -> null reference"}
+{"utterance": "delete waypoint 5", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 5, "axis": null, "offset": null}, "demonstrates": "delete -> reference set, axis/offset null"}
+{"utterance": "delete all the waypoints", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "demonstrates": "delete_all -> null reference"}
+{"utterance": "bring up the configuration panel", "ground_truth": {"type": "navigation", "intent": "configure"}, "demonstrates": "menu transition"}
+{"utterance": "put me in edit mode", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "demonstrates": "mode switch"}
+{"utterance": "execute the trajectory", "ground_truth": {"type": "execution", "verb": "run"}, "demonstrates": "safety verb -> type execution"}
+{"utterance": "what time is it", "ground_truth": {"type": "reject"}, "demonstrates": "out of scope -> decline"}
+{"utterance": "move waypoint 2 up", "ground_truth": {"type": "reject"}, "demonstrates": "under-specified (no amount) -> decline, do not guess"}
