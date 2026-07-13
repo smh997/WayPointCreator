@@ -118,6 +118,15 @@ There are four command types.
    verb: "run" | "confirm" | "cancel" | "stop"
    Also report confidence, a number between 0 and 1.
 
+   Map by MEANING, not by exact wording. Users express these verbs naturally:
+     - Any instruction to start/execute/send the authored motion  -> verb "run"
+     - Any expression of agreement, assent, or approval           -> verb "confirm"
+     - Any expression of withdrawal, dismissal, or calling it off -> verb "cancel"
+     - Any demand to immediately cease or abandon robot motion    -> verb "stop"
+   These are in scope even when phrased indirectly or colloquially. A short
+   utterance whose intent is clearly one of these four verbs is "execution",
+   NOT "reject" and NOT an authoring command.
+
 4) "reject" — REFUSE rather than guess. Use this when the command is:
    - out of scope for this system (not about waypoints, menus, or running the robot),
    - an operation this system does not support,
