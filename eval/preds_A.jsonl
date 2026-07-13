@@ -1,5 +1,5 @@
-{"id": "000_139d27aa", "prediction": {"type": "reject"}, "latency_s": 3e-06}
-{"id": "001_6ff2e079", "prediction": {"type": "reject"}, "latency_s": 1e-06}
+{"id": "000_139d27aa", "prediction": {"type": "reject"}, "latency_s": 6e-06}
+{"id": "001_6ff2e079", "prediction": {"type": "reject"}, "latency_s": 2e-06}
 {"id": "002_e648b4d2", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "003_fb3a9a11", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "004_4a0b67c1", "prediction": {"type": "reject"}, "latency_s": 0.0}
@@ -7,13 +7,13 @@
 {"id": "006_2aaa2ec5", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "007_a4ca43b9", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "008_dba0cb9b", "prediction": {"type": "reject"}, "latency_s": 1e-06}
-{"id": "009_9914f8ca", "prediction": {"type": "reject"}, "latency_s": 0.0}
+{"id": "009_9914f8ca", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "010_0de14c5f", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "011_7d5b2b8c", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "012_8d62708e", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "013_6153f6b7", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "014_4082c689", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "015_85fcd6c7", "prediction": {"type": "reject"}, "latency_s": 0.0}
+{"id": "015_85fcd6c7", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "016_551e9fbe", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "017_18e80027", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "018_c8f18d45", "prediction": {"type": "reject"}, "latency_s": 0.0}
@@ -35,7 +35,7 @@
 {"id": "034_ccac878b", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "035_88b18d7c", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "036_1a56a207", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "037_cb02c8ff", "prediction": {"type": "reject"}, "latency_s": 0.0}
+{"id": "037_cb02c8ff", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "038_f700a9e1", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "039_e4ba7b8c", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "040_a2dbd994", "prediction": {"type": "reject"}, "latency_s": 1e-06}
@@ -67,7 +67,7 @@
 {"id": "066_fee4b9bd", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "067_4f8785da", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "068_7ec6f82d", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "069_ee84242f", "prediction": {"type": "reject"}, "latency_s": 0.0}
+{"id": "069_ee84242f", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "070_302e84b0", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "071_13cc555e", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "072_e7f1da14", "prediction": {"type": "reject"}, "latency_s": 0.0}
@@ -89,25 +89,25 @@
 {"id": "088_ba6c66b2", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "089_cde0a696", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "090_ee5439cf", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "091_d0c4047c", "prediction": {"type": "execution", "verb": "confirm"}, "latency_s": 0.0}
+{"id": "091_d0c4047c", "prediction": {"type": "execution", "verb": "confirm"}, "latency_s": 1e-06}
 {"id": "092_ec038ea7", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "093_a79d7c4f", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "094_42a8450e", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "095_d35ce8ac", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "096_9fbd0e87", "prediction": {"type": "reject"}, "latency_s": 3e-06}
+{"id": "096_9fbd0e87", "prediction": {"type": "reject"}, "latency_s": 1e-06}
 {"id": "097_4fd0653c", "prediction": {"type": "execution", "verb": "cancel"}, "latency_s": 0.0}
 {"id": "098_863b3ed5", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "099_48099dcb", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "100_d83bb1d1", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "101_d1fdcd9e", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "102_5771847f", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "103_1b480158", "prediction": {"type": "execution", "verb": "stop"}, "latency_s": 0.0}
+{"id": "103_1b480158", "prediction": {"type": "execution", "verb": "stop"}, "latency_s": 1e-06}
 {"id": "104_c4bb8969", "prediction": {"type": "execution", "verb": "stop"}, "latency_s": 0.0}
 {"id": "105_b6408d75", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "106_7fb2a69f", "prediction": {"type": "execution", "verb": "stop"}, "latency_s": 0.0}
 {"id": "107_adcdee7c", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "108_7c0bc0d3", "prediction": {"type": "execution", "verb": "stop"}, "latency_s": 0.0}
-{"id": "109_42a4d564", "prediction": {"type": "reject"}, "latency_s": 1e-06}
+{"id": "109_42a4d564", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "110_acbcb756", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "111_7d8d88d9", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "112_af7ada74", "prediction": {"type": "reject"}, "latency_s": 0.0}
@@ -139,7 +139,7 @@
 {"id": "138_fb81d1ea", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "139_1dadc4c1", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "140_134627d4", "prediction": {"type": "reject"}, "latency_s": 0.0}
-{"id": "141_d1b20b94", "prediction": {"type": "reject"}, "latency_s": 1e-06}
+{"id": "141_d1b20b94", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "142_15228de2", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "143_c8590e80", "prediction": {"type": "reject"}, "latency_s": 0.0}
 {"id": "144_538a0324", "prediction": {"type": "reject"}, "latency_s": 0.0}
