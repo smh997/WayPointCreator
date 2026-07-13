@@ -153,7 +153,7 @@ nav = {
     "configure": ["go to configure", "open the configure menu", "switch to configuration",
                   "take me to setup", "I want to configure the twin", "show configure"],
     "trajectory": ["go to trajectory", "open trajectory mode", "switch to the trajectory canvas",
-                   "let me edit waypoints", "open waypoint editing", "show trajectory"],
+                   "open the trajectory canvas", "open waypoint editing", "show trajectory"],
     "preview": ["preview the motion", "show me the preview", "animate the trajectory",
                 "let me see it move", "play the preview", "preview the path"],
     "run": ["go to the run screen", "open preview and run", "take me to the run menu",

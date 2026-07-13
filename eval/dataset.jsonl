@@ -48,7 +48,7 @@
 {"id": "047_9083ed16", "utterance": "go to trajectory", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
 {"id": "048_f83a22cb", "utterance": "open trajectory mode", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
 {"id": "049_171fc154", "utterance": "switch to the trajectory canvas", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
-{"id": "050_721889c9", "utterance": "let me edit waypoints", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "050_437ce6f7", "utterance": "open the trajectory canvas", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
 {"id": "051_8c0720f4", "utterance": "open waypoint editing", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
 {"id": "052_11d44d19", "utterance": "show trajectory", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
 {"id": "053_6deca56c", "utterance": "preview the motion", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
