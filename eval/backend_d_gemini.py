@@ -80,7 +80,24 @@ RESPONSE_SCHEMA = {
         },
         "confidence": {"type": "NUMBER", "nullable": True},
     },
-    "required": ["type"],
+    # Every property must be listed as required.
+    #
+    # This is not cosmetic. With `required: ["type"]` (i.e. only the discriminator
+    # mandatory and the rest merely `nullable`), Gemini's constrained decoder is free
+    # to emit an arbitrary *subset* of properties -- and empirically it drops exactly
+    # the conditionally-relevant ones we need. On "raise waypoint two by five
+    # centimeters" it returned {type, operation, reference, verb:null} and silently
+    # omitted `axis` and `offset`, producing a uniform 0% on both fields across the
+    # whole dataset. That looked like a model failure but was a schema defect: with
+    # `responseSchema` removed entirely, the same model answered correctly
+    # (axis "z", offset 0.05), proving it understood the task.
+    #
+    # Listing every property as required forces the decoder to emit them all, using
+    # null where a field does not apply to the row's type. This keeps Backend D
+    # schema-constrained -- and therefore symmetric with Backend B -- rather than
+    # fixing the bug by dropping structured output on one side of the comparison.
+    "required": ["type", "operation", "reference", "axis", "offset",
+                 "intent", "verb", "confidence"],
 }
 
 
