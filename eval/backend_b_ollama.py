@@ -24,6 +24,10 @@ Usage:
 
   # warm the model first (excludes cold-load time from latency stats):
   py backend_b_ollama.py --model qwen2.5:7b-instruct --out preds_B_qwen.jsonl --warmup
+
+  # plain JSON mode (no schema constraint) -- opt-in, comparable to Groq's
+  # json_object mode on the same model:
+  py backend_b_ollama.py --model llama3.1:8b --out preds_B_llama_json.jsonl --json-mode
 """
 import argparse
 import json
@@ -150,7 +154,7 @@ def get_prompt(few_shot=False):
     return SYSTEM_PROMPT + "\n" + build_prompt_block()
 
 
-def build_payload(model, utterance, few_shot=False):
+def build_payload(model, utterance, few_shot=False, json_mode=False):
     return {
         "model": model,
         "messages": [
@@ -158,7 +162,11 @@ def build_payload(model, utterance, few_shot=False):
             {"role": "user", "content": utterance},
         ],
         "stream": False,
-        "format": COMMAND_SCHEMA,   # schema-constrained decoding
+        # Default: schema-constrained (llama.cpp grammar decoding). Opt-in
+        # --json-mode swaps this for Ollama's plain format="json" -- valid JSON
+        # is still guaranteed, but the SHAPE is not, so it is directly comparable
+        # to Groq's json_object mode on the same model (llama-3.1-8b-instant).
+        "format": "json" if json_mode else COMMAND_SCHEMA,
         "options": {
             "temperature": 0,       # deterministic (SCHEMA_SPEC §5.4)
             "seed": 0,
@@ -167,9 +175,33 @@ def build_payload(model, utterance, few_shot=False):
     }
 
 
-def call_ollama(model, utterance, timeout=120, few_shot=False):
+def _extract_json(text):
+    """Best-effort extraction of a JSON object from free-form text.
+
+    Only used in --json-mode. Without schema constraint the model may wrap its
+    answer in prose and/or a ```json fence. This does NOT repair malformed
+    JSON -- if no parseable object is found, the caller's json.loads raises and
+    the row is correctly counted as malformed, per SCHEMA_SPEC §5.4.
+    """
+    if not isinstance(text, str):
+        return text
+    t = text.strip()
+    if t.startswith("{"):
+        return t
+    if "```" in t:
+        seg = t.split("```")[1]
+        if seg.startswith("json"):
+            seg = seg[4:]
+        t = seg.strip()
+        if t.startswith("{"):
+            return t
+    i, j = t.find("{"), t.rfind("}")
+    return t[i:j + 1] if i != -1 and j > i else t
+
+
+def call_ollama(model, utterance, timeout=120, few_shot=False, json_mode=False):
     """Returns (parsed_obj_or_None, latency_seconds, raw_text)."""
-    payload = json.dumps(build_payload(model, utterance, few_shot)).encode("utf-8")
+    payload = json.dumps(build_payload(model, utterance, few_shot, json_mode)).encode("utf-8")
     req = urllib.request.Request(
         OLLAMA_URL, data=payload,
         headers={"Content-Type": "application/json"},
@@ -186,8 +218,12 @@ def call_ollama(model, utterance, timeout=120, few_shot=False):
     dt = time.perf_counter() - t0
 
     raw = body.get("message", {}).get("content", "")
+    # Schema-constrained mode is left untouched (parses raw directly, exactly as
+    # before) so existing results stay reproducible. json_mode tolerates prose/
+    # fences around the object before parsing.
+    text_for_parse = _extract_json(raw) if json_mode else raw
     try:
-        obj = json.loads(raw)
+        obj = json.loads(text_for_parse)
         if not isinstance(obj, dict):
             obj = None
     except (json.JSONDecodeError, TypeError):
@@ -220,6 +256,10 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="only run first N rows (smoke test)")
     ap.add_argument("--few-shot", action="store_true",
                     help="append the (disjoint) few-shot example block to the prompt")
+    ap.add_argument("--json-mode", action="store_true",
+                    help="plain JSON mode (Ollama format=\"json\"), no schema "
+                         "constraint -- comparable to Groq's json_object mode. "
+                         "Default stays schema-constrained.")
     args = ap.parse_args()
 
     rows = []
@@ -230,9 +270,13 @@ def main():
     if args.limit:
         rows = rows[:args.limit]
 
+    constraint = "json_mode (no schema)" if args.json_mode else "schema-constrained"
+    print(f"constraint mode: {constraint}", flush=True)
+
     if args.warmup:
         print(f"Warming up {args.model} ...", flush=True)
-        _, dt, _ = call_ollama(args.model, "warm up", few_shot=args.few_shot)
+        _, dt, _ = call_ollama(args.model, "warm up", few_shot=args.few_shot,
+                                json_mode=args.json_mode)
         print(f"  cold call took {dt:.2f}s (excluded from results)\n", flush=True)
 
     out = []
@@ -240,7 +284,8 @@ def main():
     t_start = time.perf_counter()
 
     for i, r in enumerate(rows, 1):
-        obj, dt, raw = call_ollama(args.model, r["utterance"], few_shot=args.few_shot)
+        obj, dt, raw = call_ollama(args.model, r["utterance"], few_shot=args.few_shot,
+                                    json_mode=args.json_mode)
         obj = normalize(obj)
         if obj is None or "type" not in obj:
             malformed += 1
