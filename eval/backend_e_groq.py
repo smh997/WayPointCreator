@@ -56,19 +56,38 @@ STRUCTURED_OUTPUT_MODELS = {
 
 # ----------------------------------------------------------------------
 # Schema, in OpenAI's json_schema dialect (Groq is OpenAI-compatible).
-# Same fields/enums as SCHEMA_SPEC.md §2 and the Ollama/Gemini schemas.
+# Same fields and enums as SCHEMA_SPEC.md §2 and Backends B and D.
 #
-# As with Gemini: EVERY property is listed in `required`. Leaving conditionally
-# relevant fields optional lets a constrained decoder silently omit them --
-# that is what produced Gemini's spurious 0% on axis/offset. Null is used for
-# fields that do not apply to a row's type.
+# `strict` is deliberately FALSE, and that choice cost us a run, so it is
+# documented rather than left as a silent flag:
+#
+#   Under `strict: true`, OpenAI's dialect mandates that EVERY property appear in
+#   `required` -- optionality is not expressible. Groq then validates server-side
+#   and HARD-REJECTS (HTTP 400) any response missing a required key.
+#
+#   GPT-OSS 20B answers a reject row with {"type": "reject"} -- which is exactly
+#   the correct object per SCHEMA_SPEC §2.4, where reject is type-only. Strict mode
+#   threw that correct answer away for omitting seven inapplicable keys, yielding a
+#   spurious 0% reject accuracy and 42 "malformed" rows for a model that had in fact
+#   answered correctly.
+#
+#   With `strict: false` the schema still guides generation, but a minimal,
+#   semantically correct object is no longer discarded.
+#
+# Note the providers enforce in OPPOSITE directions, so one `required` list cannot
+# serve both:
+#   Gemini -- a permissive schema lets its decoder silently OMIT fields, so every
+#             property must be required (it dropped axis/offset otherwise).
+#   Groq   -- a rigid schema causes server-side REJECTION of minimal objects, so
+#             strictness must be relaxed.
+# Fields and enums are identical across B, D, and E; only the enforcement plumbing
+# differs, which is what keeps the comparison fair.
 # ----------------------------------------------------------------------
 JSON_SCHEMA = {
     "name": "aurapath_command",
-    "strict": True,
+    "strict": False,
     "schema": {
         "type": "object",
-        "additionalProperties": False,
         "properties": {
             "type": {"type": "string",
                      "enum": ["authoring", "navigation", "execution", "reject"]},
@@ -85,8 +104,9 @@ JSON_SCHEMA = {
                      "enum": ["run", "confirm", "cancel", "stop", None]},
             "confidence": {"type": ["number", "null"]},
         },
-        "required": ["type", "operation", "reference", "axis", "offset",
-                     "intent", "verb", "confidence"],
+        # Only the discriminator is universally required (SCHEMA_SPEC §2):
+        # a reject object is legitimately {"type": "reject"} and nothing else.
+        "required": ["type"],
     },
 }
 
