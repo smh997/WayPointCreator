@@ -1,0 +1,169 @@
+{"id": "000_139d27aa", "utterance": "raise waypoint two by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": 0.05}, "category": "offset_up", "notes": ""}
+{"id": "001_6ff2e079", "utterance": "move waypoint 3 up by ten centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "z", "offset": 0.1}, "category": "offset_up", "notes": ""}
+{"id": "002_e648b4d2", "utterance": "lift the second waypoint two centimeters higher", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": 0.02}, "category": "offset_up", "notes": ""}
+{"id": "003_fb3a9a11", "utterance": "bump waypoint one up fifteen centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "z", "offset": 0.15}, "category": "offset_up", "notes": ""}
+{"id": "004_4a0b67c1", "utterance": "raise the last waypoint by three centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "z", "offset": 0.03}, "category": "offset_up", "notes": ""}
+{"id": "005_e85a825d", "utterance": "push waypoint 4 higher by eight centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "z", "offset": 0.08}, "category": "offset_up", "notes": ""}
+{"id": "006_2aaa2ec5", "utterance": "take waypoint two up by twelve centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": 0.12}, "category": "offset_up", "notes": ""}
+{"id": "007_a4ca43b9", "utterance": "lower waypoint two by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": -0.05}, "category": "offset_down", "notes": ""}
+{"id": "008_dba0cb9b", "utterance": "drop waypoint 3 down ten centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "z", "offset": -0.1}, "category": "offset_down", "notes": ""}
+{"id": "009_9914f8ca", "utterance": "move the first waypoint down by four centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "z", "offset": -0.04}, "category": "offset_down", "notes": ""}
+{"id": "010_0de14c5f", "utterance": "bring waypoint five lower by seven centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 5, "axis": "z", "offset": -0.07}, "category": "offset_down", "notes": ""}
+{"id": "011_7d5b2b8c", "utterance": "lower the last waypoint two centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "z", "offset": -0.02}, "category": "offset_down", "notes": ""}
+{"id": "012_8d62708e", "utterance": "sink waypoint two by six centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": -0.06}, "category": "offset_down", "notes": ""}
+{"id": "013_6153f6b7", "utterance": "move waypoint two forward by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "x", "offset": 0.05}, "category": "offset_forward", "notes": ""}
+{"id": "014_4082c689", "utterance": "push the third waypoint forward ten centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "x", "offset": 0.1}, "category": "offset_forward", "notes": ""}
+{"id": "015_85fcd6c7", "utterance": "shift waypoint one away from the base by eight centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "x", "offset": 0.08}, "category": "offset_forward", "notes": ""}
+{"id": "016_551e9fbe", "utterance": "move waypoint two back by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "x", "offset": -0.05}, "category": "offset_back", "notes": ""}
+{"id": "017_18e80027", "utterance": "pull waypoint four backward by twelve centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "x", "offset": -0.12}, "category": "offset_back", "notes": ""}
+{"id": "018_c8f18d45", "utterance": "move waypoint three to the left by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "y", "offset": 0.05}, "category": "offset_left", "notes": ""}
+{"id": "019_49b8de8d", "utterance": "shift the second waypoint left by nine centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "y", "offset": 0.09}, "category": "offset_left", "notes": ""}
+{"id": "020_7f396c8f", "utterance": "move waypoint three to the right by five centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "y", "offset": -0.05}, "category": "offset_right", "notes": ""}
+{"id": "021_5b7892e1", "utterance": "nudge waypoint one right by three centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "y", "offset": -0.03}, "category": "offset_right", "notes": ""}
+{"id": "022_cbfa36b3", "utterance": "rotate waypoint two around z by fifteen degrees", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "rz", "offset": 0.261799}, "category": "offset_rot", "notes": ""}
+{"id": "023_c1315e00", "utterance": "turn the last waypoint ten degrees about the z axis", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "rz", "offset": 0.174533}, "category": "offset_rot", "notes": ""}
+{"id": "024_2c7a8ac6", "utterance": "tilt waypoint three by twenty degrees around x", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "rx", "offset": 0.349066}, "category": "offset_rot", "notes": ""}
+{"id": "025_59aeed1f", "utterance": "roll waypoint one negative five degrees about y", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "ry", "offset": -0.087266}, "category": "offset_rot", "notes": ""}
+{"id": "026_33f1ec0b", "utterance": "create a new waypoint", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "027_2f3d168d", "utterance": "add a waypoint here", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "028_a7af8213", "utterance": "place a new point", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "029_17af6b88", "utterance": "drop a waypoint", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "030_64f5852e", "utterance": "make a new waypoint at this spot", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "031_80e325d4", "utterance": "delete waypoint two", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 2, "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "032_29d939ef", "utterance": "remove the third waypoint", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 3, "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "033_11e870d4", "utterance": "get rid of waypoint five", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 5, "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "034_ccac878b", "utterance": "erase the last waypoint", "ground_truth": {"type": "authoring", "operation": "delete", "reference": "last", "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "035_88b18d7c", "utterance": "delete point one", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 1, "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "036_1a56a207", "utterance": "delete all waypoints", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "037_cb02c8ff", "utterance": "clear all the waypoints", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "038_f700a9e1", "utterance": "remove everything", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "039_e4ba7b8c", "utterance": "wipe the whole path", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "040_a2dbd994", "utterance": "start over and clear all points", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "041_8ff9ef48", "utterance": "go to configure", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "042_f3bca27c", "utterance": "open the configure menu", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "043_51738f01", "utterance": "switch to configuration", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "044_c4a16968", "utterance": "take me to setup", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "045_3bd6f2d9", "utterance": "I want to configure the twin", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "046_82cd502b", "utterance": "show configure", "ground_truth": {"type": "navigation", "intent": "configure"}, "category": "nav_configure", "notes": ""}
+{"id": "047_9083ed16", "utterance": "go to trajectory", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "048_f83a22cb", "utterance": "open trajectory mode", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "049_171fc154", "utterance": "switch to the trajectory canvas", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "050_721889c9", "utterance": "let me edit waypoints", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "051_8c0720f4", "utterance": "open waypoint editing", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "052_11d44d19", "utterance": "show trajectory", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "nav_trajectory", "notes": ""}
+{"id": "053_6deca56c", "utterance": "preview the motion", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "054_14147c64", "utterance": "show me the preview", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "055_5c204c12", "utterance": "animate the trajectory", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "056_b643f5c2", "utterance": "let me see it move", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "057_b88d40ab", "utterance": "play the preview", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "058_79845a73", "utterance": "preview the path", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "nav_preview", "notes": ""}
+{"id": "059_911bbd05", "utterance": "go to the run screen", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "060_c99bd7f9", "utterance": "open preview and run", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "061_49ba036d", "utterance": "take me to the run menu", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "062_cd3d81cc", "utterance": "show the run panel", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "063_a91e999c", "utterance": "open the execute screen", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "064_de3ac217", "utterance": "exit", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "065_a2b375e1", "utterance": "quit the app", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "066_fee4b9bd", "utterance": "close this", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "067_4f8785da", "utterance": "go back to the main menu", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "068_7ec6f82d", "utterance": "leave this screen", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "069_ee84242f", "utterance": "exit please", "ground_truth": {"type": "navigation", "intent": "exit"}, "category": "nav_exit", "notes": ""}
+{"id": "070_302e84b0", "utterance": "switch to create mode", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "071_13cc555e", "utterance": "enter create mode", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "072_e7f1da14", "utterance": "let me add waypoints", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "073_5ec2e93f", "utterance": "turn on create mode", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "074_077aa25e", "utterance": "go into placement mode", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "075_8d9bef94", "utterance": "switch to edit mode", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "076_1279aaff", "utterance": "enter edit mode", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "077_721889c9", "utterance": "let me edit waypoints", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "078_356221fa", "utterance": "turn on editing", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "079_8b555f7e", "utterance": "go into edit mode", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "080_7820a746", "utterance": "switch to delete mode", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "081_8c7e3674", "utterance": "enter delete mode", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "082_5011c2dd", "utterance": "let me delete waypoints", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "083_225cc452", "utterance": "turn on delete mode", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "084_c67d2724", "utterance": "go into deletion mode", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "085_8b7e1710", "utterance": "run it", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "086_85d30474", "utterance": "execute the path", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "087_9653ba70", "utterance": "send it to the robot", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "088_ba6c66b2", "utterance": "go ahead and run", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "089_cde0a696", "utterance": "run the trajectory", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "090_ee5439cf", "utterance": "start the robot", "ground_truth": {"type": "execution", "verb": "run"}, "category": "exec_run", "notes": ""}
+{"id": "091_d0c4047c", "utterance": "confirm", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "092_ec038ea7", "utterance": "yes confirm", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "093_a79d7c4f", "utterance": "acknowledge the path", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "094_42a8450e", "utterance": "yes go ahead", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "095_d35ce8ac", "utterance": "confirmed", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "096_9fbd0e87", "utterance": "affirmative", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "exec_confirm", "notes": ""}
+{"id": "097_4fd0653c", "utterance": "cancel", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "098_863b3ed5", "utterance": "never mind", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "099_48099dcb", "utterance": "cancel that", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "100_d83bb1d1", "utterance": "stop the confirmation", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "101_d1fdcd9e", "utterance": "abort this", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "102_5771847f", "utterance": "cancel the run", "ground_truth": {"type": "execution", "verb": "cancel"}, "category": "exec_cancel", "notes": ""}
+{"id": "103_1b480158", "utterance": "stop", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "104_c4bb8969", "utterance": "halt", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "105_b6408d75", "utterance": "stop now", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "106_7fb2a69f", "utterance": "emergency stop", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "107_adcdee7c", "utterance": "freeze", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "108_7c0bc0d3", "utterance": "stop the robot", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "exec_stop", "notes": ""}
+{"id": "109_42a4d564", "utterance": "what's the weather today", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "out_of_domain"}
+{"id": "110_acbcb756", "utterance": "tell me a joke", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "out_of_domain"}
+{"id": "111_7d8d88d9", "utterance": "how heavy is the ur10 arm", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "out_of_domain_qa"}
+{"id": "112_af7ada74", "utterance": "make the robot dance", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "113_b47091a5", "utterance": "pick up that box over there", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "114_c9f5b2c1", "utterance": "weld along the seam", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "115_39dc7cd9", "utterance": "move the waypoint", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_missing_ref_axis"}
+{"id": "116_bf76a4c0", "utterance": "raise it", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_missing_ref_amount"}
+{"id": "117_4c217137", "utterance": "shift by five centimeters", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_missing_ref_axis"}
+{"id": "118_d9e474a0", "utterance": "move waypoint two", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_missing_axis_amount"}
+{"id": "119_2def866b", "utterance": "do the thing", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_vacuous"}
+{"id": "120_c363ae54", "utterance": "change something", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_vacuous"}
+{"id": "121_1c4dec6f", "utterance": "set the speed to fifty percent", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_param"}
+{"id": "122_8fddf7b9", "utterance": "increase the force limit", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_param"}
+{"id": "123_9a8077db", "utterance": "undo that", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "124_1cf18388", "utterance": "redo the last move", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "125_c87d7cbe", "utterance": "save this program as test one", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "126_add5ce14", "utterance": "load the previous path", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "127_16a02b16", "utterance": "rotate the robot base", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "128_d6dddd67", "utterance": "go faster", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_param"}
+{"id": "129_3fa77154", "utterance": "mirror the path", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "130_69b28eed", "utterance": "waypoint", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_vacuous"}
+{"id": "131_9485989f", "utterance": "delete", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_missing_ref"}
+{"id": "132_692892c4", "utterance": "move waypoint fifty up by five centimeters", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "out_of_range_ref"}
+{"id": "133_eab18c2e", "utterance": "could you nudge the second waypoint upward a couple centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": 0.02}, "category": "stress_offset", "notes": ""}
+{"id": "134_fb2bf416", "utterance": "I'd like waypoint three raised by about seven centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "z", "offset": 0.07}, "category": "stress_offset", "notes": ""}
+{"id": "135_63c4c528", "utterance": "scoot the last one down four centimeters please", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "z", "offset": -0.04}, "category": "stress_offset", "notes": ""}
+{"id": "136_e72d2b64", "utterance": "can we drop point number two by nine centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "z", "offset": -0.09}, "category": "stress_offset", "notes": ""}
+{"id": "137_13e76848", "utterance": "go ahead and remove the second one", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 2, "axis": null, "offset": null}, "category": "stress_delete", "notes": ""}
+{"id": "138_fb81d1ea", "utterance": "let's just clear everything and restart", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "stress_delete_all", "notes": ""}
+{"id": "139_1dadc4c1", "utterance": "mind adding a fresh waypoint for me", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "stress_create", "notes": ""}
+{"id": "140_134627d4", "utterance": "take us over to the trajectory editor", "ground_truth": {"type": "navigation", "intent": "trajectory"}, "category": "stress_nav", "notes": ""}
+{"id": "141_d1b20b94", "utterance": "alright let's run this on the arm", "ground_truth": {"type": "execution", "verb": "run"}, "category": "stress_exec", "notes": ""}
+{"id": "142_15228de2", "utterance": "yeah that's good confirm it", "ground_truth": {"type": "execution", "verb": "confirm"}, "category": "stress_exec", "notes": ""}
+{"id": "143_c8590e80", "utterance": "hold on stop everything", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "stress_exec", "notes": ""}
+{"id": "144_538a0324", "utterance": "shift waypoint four to the right by six centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "y", "offset": -0.06}, "category": "stress_offset", "notes": ""}
+{"id": "145_fbd22542", "utterance": "bring the first waypoint forward eleven centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "x", "offset": 0.11}, "category": "stress_offset", "notes": ""}
+{"id": "146_6590454b", "utterance": "spin waypoint two thirty degrees around the z axis", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "rz", "offset": 0.523599}, "category": "stress_offset", "notes": ""}
+{"id": "147_d13bef77", "utterance": "get me into delete mode", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "stress_nav", "notes": ""}
+{"id": "148_458a39d8", "utterance": "open up the preview so I can watch it", "ground_truth": {"type": "navigation", "intent": "preview"}, "category": "stress_nav", "notes": ""}
+{"id": "149_dd733a5d", "utterance": "scrap waypoint six", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 6, "axis": null, "offset": null}, "category": "stress_delete", "notes": ""}
+{"id": "150_bda5f429", "utterance": "kill it now", "ground_truth": {"type": "execution", "verb": "stop"}, "category": "stress_exec", "notes": ""}
+{"id": "151_f23a12c4", "utterance": "insert a waypoint", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "category": "create", "notes": ""}
+{"id": "152_00a71e75", "utterance": "take out waypoint four", "ground_truth": {"type": "authoring", "operation": "delete", "reference": 4, "axis": null, "offset": null}, "category": "delete", "notes": ""}
+{"id": "153_87b0c4cb", "utterance": "delete the entire trajectory", "ground_truth": {"type": "authoring", "operation": "delete_all", "reference": null, "axis": null, "offset": null}, "category": "delete_all", "notes": ""}
+{"id": "154_67ee1c6a", "utterance": "push waypoint two away by seven centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "x", "offset": 0.07}, "category": "offset_forward", "notes": ""}
+{"id": "155_b6134df0", "utterance": "draw waypoint three toward me by four centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "x", "offset": -0.04}, "category": "offset_back", "notes": ""}
+{"id": "156_95f34933", "utterance": "move the last waypoint left by six centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "y", "offset": 0.06}, "category": "offset_left", "notes": ""}
+{"id": "157_6cce58be", "utterance": "slide waypoint five to the right by two centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 5, "axis": "y", "offset": -0.02}, "category": "offset_right", "notes": ""}
+{"id": "158_bb37a93b", "utterance": "yaw the last waypoint by twenty five degrees around z", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "rz", "offset": 0.436332}, "category": "offset_rot", "notes": ""}
+{"id": "159_6d925537", "utterance": "pitch waypoint two eight degrees about y", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "ry", "offset": 0.139626}, "category": "offset_rot", "notes": ""}
+{"id": "160_d9d04131", "utterance": "start placing waypoints", "ground_truth": {"type": "navigation", "intent": "create_mode"}, "category": "nav_create_mode", "notes": ""}
+{"id": "161_3e39e6e0", "utterance": "let me modify the points", "ground_truth": {"type": "navigation", "intent": "edit_mode"}, "category": "nav_edit_mode", "notes": ""}
+{"id": "162_ae0a9e15", "utterance": "switch over to removing waypoints", "ground_truth": {"type": "navigation", "intent": "delete_mode"}, "category": "nav_delete_mode", "notes": ""}
+{"id": "163_444047d2", "utterance": "bring up the execute panel", "ground_truth": {"type": "navigation", "intent": "run"}, "category": "nav_run", "notes": ""}
+{"id": "164_cbd20a42", "utterance": "move it over there", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "ambiguous_deictic"}
+{"id": "165_7dab40d9", "utterance": "bend the arm a little", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "166_f42aed95", "utterance": "what can you do", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "out_of_domain_qa"}
+{"id": "167_685b7660", "utterance": "home the robot", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
+{"id": "168_0669da66", "utterance": "calibrate the gripper", "ground_truth": {"type": "reject"}, "category": "reject", "notes": "unsupported_op"}
