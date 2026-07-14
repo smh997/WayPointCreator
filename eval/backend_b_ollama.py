@@ -167,6 +167,13 @@ def build_payload(model, utterance, few_shot=False, json_mode=False):
         # is still guaranteed, but the SHAPE is not, so it is directly comparable
         # to Groq's json_object mode on the same model (llama-3.1-8b-instant).
         "format": "json" if json_mode else COMMAND_SCHEMA,
+        # This is deterministic slot-filling, not reasoning -- hybrid-reasoning
+        # models (e.g. qwen3) should not spend the output budget on a hidden
+        # thinking pass. Confirmed via probe: qwen3:8b with think unset spent its
+        # entire num_predict on thinking tokens and returned empty content; with
+        # think=False it returns correct content immediately. Verified harmless
+        # no-op on non-reasoning models (qwen2.5, llama3.1) -- identical output.
+        "think": False,
         "options": {
             "temperature": 0,       # deterministic (SCHEMA_SPEC §5.4)
             "seed": 0,
