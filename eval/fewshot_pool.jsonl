@@ -1,6 +1,9 @@
 {"utterance": "move waypoint 3 up by 10 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 3, "axis": "z", "offset": 0.1}, "demonstrates": "up -> +z"}
 {"utterance": "move waypoint 1 down by 6 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 1, "axis": "z", "offset": -0.06}, "demonstrates": "down -> -z"}
-{"utterance": "move waypoint 4 to the right by 8 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "y", "offset": -0.08}, "demonstrates": "right -> -y (UR10 base frame)"}
+{"utterance": "move waypoint 4 to the right by 8 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 4, "axis": "y", "offset": -0.08}, "demonstrates": "right -> -y"}
+{"utterance": "move waypoint 2 to the left by 7 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "y", "offset": 0.07}, "demonstrates": "left -> +y"}
+{"utterance": "move waypoint 5 forward by 12 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 5, "axis": "x", "offset": 0.12}, "demonstrates": "forward -> +x"}
+{"utterance": "move waypoint 6 backward by 9 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 6, "axis": "x", "offset": -0.09}, "demonstrates": "back -> -x"}
 {"utterance": "rotate waypoint 2 by 45 degrees around z", "ground_truth": {"type": "authoring", "operation": "offset", "reference": 2, "axis": "rz", "offset": 0.785398}, "demonstrates": "degrees -> radians"}
 {"utterance": "move the last waypoint up by 3 centimeters", "ground_truth": {"type": "authoring", "operation": "offset", "reference": "last", "axis": "z", "offset": 0.03}, "demonstrates": "reference \"last\""}
 {"utterance": "create a waypoint", "ground_truth": {"type": "authoring", "operation": "create", "reference": null, "axis": null, "offset": null}, "demonstrates": "create -> null reference"}
