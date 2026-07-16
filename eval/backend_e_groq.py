@@ -120,7 +120,7 @@ def response_format_for(model):
 
 def build_payload(model, utterance, few_shot=False):
     rf, _mode = response_format_for(model)
-    return {
+    payload = {
         "model": model,
         "messages": [
             {"role": "system", "content": get_prompt(few_shot)},
@@ -130,6 +130,15 @@ def build_payload(model, utterance, few_shot=False):
         "max_tokens": 512,
         "response_format": rf,
     }
+    # GPT-OSS is a reasoning model (confirmed via probe: default settings spent
+    # the whole token budget on a hidden reasoning pass and returned empty
+    # content -- the same failure mode as Qwen3 on Ollama and Gemini 3 on Backend
+    # D). This is deterministic slot-filling, not reasoning, so minimize it.
+    # Groq only accepts low/medium/high for reasoning_effort -- no off switch
+    # exists (confirmed: "none" is rejected) -- so "low" is the floor.
+    if "gpt-oss" in model:
+        payload["reasoning_effort"] = "low"
+    return payload
 
 
 def call_groq(model, api_key, utterance, few_shot=False, max_retries=5):
@@ -225,6 +234,79 @@ def normalize(obj):
     return out
 
 
+def load_resume_state(out_path, canonical_ids):
+    """Read an existing (possibly partial) output file and return {id: entry}
+    for rows that actually received a server response (latency_s > 0).
+
+    Rows that never got a response -- retry-exhausted or network failure, which
+    call_groq encodes as latency_s == 0.0 -- are dropped here so a resumed run
+    retries them, instead of freezing them in a permanently-failed state.
+    Corrupt/partial lines (the process was killed mid-write) are dropped too.
+    Ids outside the current dataset/--limit selection are ignored.
+    """
+    done = {}
+    if not os.path.exists(out_path):
+        return done
+    with open(out_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            _id = entry.get("id")
+            if _id in canonical_ids and entry.get("latency_s", 0) > 0:
+                done[_id] = entry
+    return done
+
+
+def rescore_file(out_path):
+    """Malformed/latency accounting over the WHOLE file, not just the rows this
+    invocation processed -- correct regardless of how many resumes it took."""
+    malformed = 0
+    lat = []
+    with open(out_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            entry = json.loads(line)
+            pred = entry.get("prediction")
+            if not isinstance(pred, dict) or "type" not in pred:
+                malformed += 1
+            ls = entry.get("latency_s", 0)
+            if ls and ls > 0:
+                lat.append(ls)
+    return malformed, sorted(lat)
+
+
+def canonicalize_file(out_path, rows):
+    """Rewrite the file in canonical dataset order.
+
+    The "done" rows carried over from a previous run are not necessarily a
+    contiguous prefix -- some rows in the middle of an interrupted run can
+    succeed while later-retried ones fail, then get appended after the resume.
+    Writing the done-block first and appending afterwards (as this script does
+    during the run, for crash-safety) does NOT reproduce canonical dataset
+    order in that case, even though every row is present and correct. This
+    final pass guarantees the promised "same order" property outright, rather
+    than relying on the weaker "re-sortable by id" fallback.
+    """
+    by_id = {}
+    with open(out_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            entry = json.loads(line)
+            by_id[entry["id"]] = entry
+    with open(out_path, "w") as f:
+        for r in rows:
+            f.write(json.dumps(by_id[r["id"]]) + "\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", default="dataset.jsonl")
@@ -249,6 +331,21 @@ def main():
                 rows.append(json.loads(line))
     if args.limit:
         rows = rows[:args.limit]
+    canonical_ids = {r["id"] for r in rows}
+
+    # Resume support: reload any already-completed rows from a previous
+    # (possibly interrupted) run at this --out path, then rewrite the file to
+    # contain ONLY those valid rows, in canonical dataset order. This drops
+    # stale retry-exhausted placeholders and any corrupt trailing line from a
+    # hard kill, so the file has no duplicate ids at any point from here on --
+    # everything appended afterwards is for a row that isn't in `done`.
+    done = load_resume_state(args.out, canonical_ids)
+    with open(args.out, "w") as f:
+        for r in rows:
+            if r["id"] in done:
+                f.write(json.dumps(done[r["id"]]) + "\n")
+
+    remaining = [r for r in rows if r["id"] not in done]
 
     _rf, mode = response_format_for(args.model)
     shot = "few-shot" if args.few_shot else "zero-shot"
@@ -258,13 +355,15 @@ def main():
     print(f"  constraint mode: {mode}"
           + ("  (schema-constrained, same as B/D)" if mode == "json_schema"
              else "  (JSON validity only; schema NOT enforced -- report this)"))
-    print(f"  {len(rows)} utterances at {args.rpm:.0f} RPM\n", flush=True)
+    if done:
+        print(f"  resuming: {len(done)}/{len(rows)} rows already completed -> skipping those")
+    print(f"  {len(remaining)} utterances remaining at {args.rpm:.0f} RPM\n", flush=True)
 
-    out, malformed = [], 0
     last_start = 0.0
     t_start = time.perf_counter()
+    out_f = open(args.out, "a")
 
-    for i, r in enumerate(rows, 1):
+    for i, r in enumerate(remaining, 1):
         wait = min_gap - (time.perf_counter() - last_start)
         if wait > 0:
             time.sleep(wait)
@@ -274,25 +373,28 @@ def main():
         obj = normalize(obj)
 
         if obj is None or "type" not in obj:
-            malformed += 1
-            print(f"  [{i:3d}/{len(rows)}] MALFORMED {r['utterance'][:40]!r} "
+            print(f"  [{i:3d}/{len(remaining)}] MALFORMED {r['utterance'][:40]!r} "
                   f"raw={raw[:70]!r}", flush=True)
             obj = None
 
-        out.append({"id": r["id"], "prediction": obj, "latency_s": round(dt, 4)})
+        entry = {"id": r["id"], "prediction": obj, "latency_s": round(dt, 4)}
+        # Persist as soon as this row completes -- not buffered to end of run --
+        # so a kill/quota-wall never loses progress already made.
+        out_f.write(json.dumps(entry) + "\n")
+        out_f.flush()
+        os.fsync(out_f.fileno())
 
-        if i % 25 == 0 or i == len(rows):
+        if i % 25 == 0 or i == len(remaining):
             elapsed = time.perf_counter() - t_start
-            eta = (elapsed / i) * (len(rows) - i)
-            print(f"  [{i:3d}/{len(rows)}]  {elapsed/60:4.1f} min  "
+            eta = (elapsed / i) * (len(remaining) - i)
+            print(f"  [{i:3d}/{len(remaining)}]  {elapsed/60:4.1f} min  "
                   f"ETA {eta/60:4.1f} min", flush=True)
 
-    with open(args.out, "w") as f:
-        for o in out:
-            f.write(json.dumps(o) + "\n")
+    out_f.close()
+    canonicalize_file(args.out, rows)
 
-    lat = sorted(o["latency_s"] for o in out if o["latency_s"] > 0)
-    print(f"\n  wrote {len(out)} predictions -> {args.out}")
+    malformed, lat = rescore_file(args.out)
+    print(f"\n  wrote {len(rows)} predictions total -> {args.out}")
     print(f"  malformed: {malformed}")
     if lat:
         p95 = lat[min(len(lat) - 1, int(round(0.95 * (len(lat) - 1))))]
