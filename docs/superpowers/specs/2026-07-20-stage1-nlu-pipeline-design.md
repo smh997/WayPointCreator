@@ -90,6 +90,13 @@ Finds `VoiceCommandRouter` via `FindObjectOfType` at runtime.
 - Sends over a fresh `TcpClient` to `127.0.0.1:5001` per call, using the
   same blocking-coroutine `TcpClient` pattern already used in
   `OperationsManager` (no new async pattern introduced).
+- Wraps the connect/send in try/catch (matching the existing
+  `SocketException` handling pattern in `OperationsManager`/`TestClient`)
+  and, on failure, shows **"NLU server not reachable on 127.0.0.1:5001"**
+  in the `OnGUI` status area — not just a `Debug.LogError`. The whole point
+  of this debug tool is fast iteration; a raw unhandled socket exception in
+  the Console reads as "I broke something" when the actual cause is just
+  "forgot to start `nlu_server.py`."
 
 ## Unity: dispatch (`VoiceCommandRouter.DispatchStructuredCommand`)
 
@@ -113,21 +120,46 @@ entry point for voice per its existing header comment).
   reject-don't-guess principle the schema itself uses.
 - `operation: "delete_all"` → `Waypoints.DeleteAllWaypoints()`.
 - `operation: "delete"` → resolve `reference` via
-  `WaypointManager.TryGetWaypointByReference`; unresolved (null/
-  out-of-range) → `Say("Which waypoint? Say delete last, or a waypoint
-  number.")`, no-op. Never guesses a target.
-- `operation: "offset"` → resolve `reference` the same way, then
-  `WaypointManager.TryApplyOffset`. Same no-guessing rule on unresolved
-  reference.
+  `WaypointManager.TryGetWaypointByReference`, which distinguishes *why* it
+  failed (see below): `Missing` → `Say("Which waypoint? Say delete last, or
+  a waypoint number.")`; `OutOfRange` → `Say("There's no waypoint
+  {n}.")` (or `"There are no waypoints."` if `reference == "last"` on an
+  empty list). Resolved → `Waypoints.RemoveWaypoint(wp)` directly, **without
+  switching to Delete mode first** (see mode-gating note below). Never
+  guesses a target either way.
+- `operation: "offset"` → resolve `reference` the same way, same
+  Missing/OutOfRange distinction, then on resolution call
+  `WaypointManager.TryApplyOffset`.
 - `type: "reject"` → `Say("Sorry, I didn't understand that command.")`,
   no-op.
+
+**Mode-gating decision for voice delete:** `WaypointManager.RemoveWaypoint`
+has no internal mode check — the existing `Mode == WaypointMode.Delete`
+guard lives only at its two current call sites (`Waypoint.cs`,
+`WaypointInteractable.cs`), not inside the method itself. Voice `delete`
+calls `RemoveWaypoint` directly, bypassing the mode gate and leaving `Mode`
+unchanged. This is deliberate, not a bypass we should later "fix": unlike
+`create`, a voice `delete <reference>` fully specifies its target already,
+so there's no missing-information reason to force a mode switch (and doing
+so would trigger the Delete-mode waypoint recoloring as an unwanted side
+effect of a voice command that isn't itself entering that mode).
 
 ## `WaypointManager` additions
 
 - `TryGetWaypointByReference(string reference, out Waypoint wp)` — handles
   `"last"` and 1-indexed integers (matches the existing `SetOrder(i+1)`
-  convention). Returns `false` for null/unparseable/out-of-range; callers
-  must handle "unresolved" explicitly.
+  convention). Returns an enum result, not a plain bool, because the
+  dispatcher needs to distinguish two different failure modes and respond
+  differently to each (the evaluation dataset treats out-of-range
+  references as a distinct, documented reject case, and `MAX_WAYPOINTS = 5`
+  means "waypoint six" is *always* invalid, not just currently invalid):
+  - `Resolved` — reference parsed and points at an existing waypoint.
+  - `Missing` — `reference` was null/empty (no target given at all).
+  - `OutOfRange` — `reference` parsed fine but doesn't point at anything
+    (index beyond the current count, or `"last"` with zero waypoints).
+
+  Callers must branch on all three explicitly rather than collapsing to a
+  single "unresolved" case.
 - `TryApplyOffset(Waypoint wp, string axis, float value, Transform
   robotBase)` — inverts the **canonical** Unity→UR conversion, i.e. the one
   in `CalculateWaypointsData()` (the function actually used for live
@@ -152,7 +184,12 @@ entry point for voice per its existing header comment).
 ## Verification plan
 
 1. Start `nlu_server.py` standalone — confirm it runs with no robot and no
-   `Server/server.py` involved at all.
+   `Server/server.py` involved at all. **This must happen before entering
+   Unity Play mode** — the debug input has no auto-launch/retry of the
+   server, so testing order matters. Also deliberately test the inverse:
+   enter Play mode *without* starting the server first, send a command, and
+   confirm the "NLU server not reachable" message appears in the debug
+   input's status area rather than an unhandled exception.
 2. A handful (3–4) of raw utterances via a quick script, confirming the wire
    round-trip and the `reference`-as-string encoding. This is a protocol
    sanity check, not a re-run of evaluation.
@@ -163,7 +200,11 @@ entry point for voice per its existing header comment).
      has already been wrong before (the dead conversion's differing signs),
      so all three get checked individually, not just the one the schema
      example happened to use.
-   - `delete <ref>`, `delete_all`.
+   - `delete <ref>` on a valid reference, `delete_all`.
+   - `delete` with an out-of-range reference (e.g. "delete waypoint six"
+     with fewer than six present) → confirm the `"There's no waypoint
+     six."`-style message appears, distinct from the `Missing`-reference
+     message, and nothing is deleted.
    - `create` → mode switches, "Create mode, pinch to place" message
      appears, then manual pinch-place still works afterward.
    - **`MAX_WAYPOINTS = 5` interaction**: offsetting an existing waypoint
