@@ -109,3 +109,52 @@ def test_model_output_missing_type_field_returns_failure():
                        return_value=({"operation": "create"}, 0.1, "{}")):
         result = handle_nlu_request({"utterance": "add one"}, "qwen2.5:3b")
     assert result["success"] is False
+
+
+import json as json_module
+import socket as socket_module
+import threading
+import time
+
+
+def test_server_round_trip_over_socket():
+    fake_obj = {"type": "navigation", "intent": "configure"}
+    test_port = 15001
+
+    with patch.object(nlu_server, "call_ollama",
+                       return_value=(fake_obj, 0.1, "{}")):
+        thread = threading.Thread(
+            target=nlu_server.start_server,
+            kwargs={"host": "127.0.0.1", "port": test_port},
+            daemon=True,
+        )
+        thread.start()
+        time.sleep(0.3)  # let the accept loop bind before we connect
+
+        with socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM) as client:
+            client.connect(("127.0.0.1", test_port))
+            request = json_module.dumps({"type": "nlu", "utterance": "configure"}) + "\n"
+            client.sendall(request.encode("utf-8"))
+            response = json_module.loads(client.recv(4096).decode("utf-8").strip())
+
+    assert response["success"] is True
+    assert response["command"]["intent"] == "configure"
+
+
+def test_server_rejects_non_nlu_request_type():
+    test_port = 15002
+    thread = threading.Thread(
+        target=nlu_server.start_server,
+        kwargs={"host": "127.0.0.1", "port": test_port},
+        daemon=True,
+    )
+    thread.start()
+    time.sleep(0.3)
+
+    with socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM) as client:
+        client.connect(("127.0.0.1", test_port))
+        request = json_module.dumps({"type": "preview"}) + "\n"
+        client.sendall(request.encode("utf-8"))
+        response = json_module.loads(client.recv(4096).decode("utf-8").strip())
+
+    assert response["success"] is False

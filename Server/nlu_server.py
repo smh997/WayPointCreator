@@ -60,5 +60,39 @@ def handle_nlu_request(msg_obj, model):
     return {"success": True, "command": shape_command_for_wire(obj)}
 
 
+def start_server(host="0.0.0.0", port=5001):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind((host, port))
+        server_socket.listen(1)
+        print(f"NLU server listening on {host}:{port}  (model={MODEL})", flush=True)
+
+        while True:
+            conn, addr = server_socket.accept()
+            with conn:
+                data = b""
+                while True:
+                    chunk = conn.recv(1024)
+                    if not chunk or chunk.endswith(b"\n"):
+                        data += chunk
+                        break
+                    data += chunk
+
+                if not data:
+                    continue
+
+                try:
+                    msg_obj = json.loads(data.decode("utf-8").strip())
+                except json.JSONDecodeError:
+                    response = {"success": False, "message": "Invalid JSON format."}
+                else:
+                    if msg_obj.get("type", "").lower() != "nlu":
+                        response = {"success": False, "message": "Unknown request type."}
+                    else:
+                        response = handle_nlu_request(msg_obj, MODEL)
+
+                conn.sendall((json.dumps(response) + "\n").encode("utf-8"))
+
+
 if __name__ == "__main__":
-    pass  # server wiring added in Task 3
+    start_server()
