@@ -23,7 +23,8 @@
 - Reference resolution has three outcomes, not two: `Resolved`, `Missing` (no reference given → `"Which waypoint? Say delete last, or a waypoint number."`), `OutOfRange` (parses but doesn't exist → `"There's no waypoint {n}."`, or `"There are no waypoints."` for `"last"` on an empty list).
 - `reject` → `Say("Sorry, I didn't understand that command.")`, no-op.
 - `NluDebugInput` is Editor/development-build only (`#if UNITY_EDITOR || DEVELOPMENT_BUILD`), self-bootstraps via `RuntimeInitializeOnLoadMethod` (no manual scene/prefab wiring), targets `127.0.0.1:5001`, and shows `"NLU server not reachable on 127.0.0.1:5001"` in its own status label (not just `Debug.LogError`) on connection failure.
-- **Testing approach note:** this Unity project has no assembly definition files under `Assets/` (all scripts compile into the implicit `Assembly-CSharp`). Introducing Unity Test Framework EditMode tests would require restructuring `Assets/Scripts` into its own `.asmdef` so a test assembly can reference it — a real, project-wide risk (MRTK/reflection-based systems, third-party plugins) far outside Stage 1's scope. Instead: the Python server gets full pytest TDD (Tasks 1–3), and every C# task is verified by a Unity batchmode compile check (Tasks 5–8, catches type/signature errors immediately) plus the manual Play-mode verification pass in Task 9, which is where the frame-conversion signs and dispatch behavior are actually exercised.
+- **Testing approach note:** this Unity project has no assembly definition files under `Assets/` (all scripts compile into the implicit `Assembly-CSharp`). Introducing Unity Test Framework EditMode tests would require restructuring `Assets/Scripts` into its own `.asmdef` so a test assembly can reference it — a real, project-wide risk (MRTK/reflection-based systems, third-party plugins) far outside Stage 1's scope. Instead: the Python server gets full pytest TDD (Tasks 1–3), every C# task is verified by a Unity batchmode compile check (Tasks 5–9, catches type/signature errors immediately), and the frame conversion specifically gets an early, isolated visual check (Task 7) before anything is built on top of it, ahead of the full manual Play-mode verification pass in Task 10.
+- **Sequencing requirement:** `TryApplyOffset`'s UR→Unity frame conversion (Task 6) is the one piece of this build with a documented history of wrong signs in this codebase (the dead/commented conversion in `OperationsManager.cs`). Task 7 verifies it in isolation — a throwaway harness, no dispatcher or debug input involved — and is a hard gate: if any axis moves the wrong way, stop and fix Task 6 before starting Task 8 (`VoiceCommandRouter`). Do not layer the dispatcher or debug input on top of an unverified conversion.
 - **Batchmode/Editor collision:** Unity holds a project lock file (`Temp/UnityLockfile`) while open, and a second `-batchmode` invocation against the same `-projectPath` will fail immediately (not a compile error — a lock/instance conflict) if the Editor GUI is already open on this project. Since the Editor was opened manually earlier this session, **close it before running any batchmode compile-check step**, and reopen it (or just re-enter Play mode) for Task 9's manual verification. If a compile-check step errors out immediately rather than producing normal Unity startup log lines, this is the first thing to check.
 
 ---
@@ -299,7 +300,7 @@ git commit -m "Add NLU server request handler with mocked-model test coverage"
 
 **Interfaces:**
 - Consumes: `handle_nlu_request` (Task 2).
-- Produces: `start_server(host="0.0.0.0", port=5001)` in `nlu_server.py` — the entry point run by `if __name__ == "__main__":` and by Task 9's manual verification.
+- Produces: `start_server(host="0.0.0.0", port=5001)` in `nlu_server.py` — the entry point run by `if __name__ == "__main__":` and by Task 10's manual verification.
 
 - [ ] **Step 1: Write the failing integration test**
 
@@ -401,7 +402,7 @@ if __name__ == "__main__":
     start_server()
 ```
 
-Note: unlike `Server/server.py`, this handles exactly one request per accepted connection then loops back to `accept()` — matching the fresh-`TcpClient`-per-call pattern both `OperationsManager` and the new `NluDebugInput` (Task 8) use, rather than `server.py`'s keep-reading-until-disconnect loop.
+Note: unlike `Server/server.py`, this handles exactly one request per accepted connection then loops back to `accept()` — matching the fresh-`TcpClient`-per-call pattern both `OperationsManager` and the new `NluDebugInput` (Task 9) use, rather than `server.py`'s keep-reading-until-disconnect loop.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
@@ -453,7 +454,7 @@ for u in tests:
 
 Expected: each line prints `{"success": true, "command": {...}}` with `reference` (if present) as a string or `null`, never a bare number — e.g. the first utterance should show `"reference": "2", "axis": "z", "offset": 0.05` (or similarly close; exact wording-to-slot mapping is the already-evaluated model's job, not something this task re-verifies). This is a protocol sanity check, **not** a re-run of evaluation — 3–4 utterances is sufficient.
 
-- [ ] **Step 3: Confirm no exceptions in the server terminal**, then leave the server running for Task 9 (or stop with Ctrl+C — it will be restarted before Task 9).
+- [ ] **Step 3: Confirm no exceptions in the server terminal**, then leave the server running for Task 10 (or stop with Ctrl+C — it will be restarted before Task 10).
 
 No commit — this task produces no file changes.
 
@@ -465,7 +466,7 @@ No commit — this task produces no file changes.
 - Modify: `Assets/Scripts/WaypointManager.cs`
 
 **Interfaces:**
-- Produces: `enum ReferenceResolution { Resolved, Missing, OutOfRange }` and `ReferenceResolution TryGetWaypointByReference(string reference, out Waypoint wp)` on `WaypointManager`, used by Task 7 (`VoiceCommandRouter`).
+- Produces: `enum ReferenceResolution { Resolved, Missing, OutOfRange }` and `ReferenceResolution TryGetWaypointByReference(string reference, out Waypoint wp)` on `WaypointManager`, used by Task 7's harness and Task 8 (`VoiceCommandRouter`).
 
 - [ ] **Step 1: Add the enum and method**
 
@@ -540,7 +541,7 @@ git commit -m "Add WaypointManager.TryGetWaypointByReference with Missing/OutOfR
 
 **Interfaces:**
 - Consumes: nothing new (uses `UnityEngine.Vector3`/`Transform`, already available).
-- Produces: `enum OffsetResult { Applied, UnsupportedAxis }` and `OffsetResult TryApplyOffset(Waypoint wp, string axis, float value, Transform robotBase)` on `WaypointManager`, used by Task 7.
+- Produces: `enum OffsetResult { Applied, UnsupportedAxis }` and `OffsetResult TryApplyOffset(Waypoint wp, string axis, float value, Transform robotBase)` on `WaypointManager`, used by Task 7's harness and Task 8.
 
 - [ ] **Step 1: Add the enum and method**
 
@@ -612,14 +613,119 @@ git commit -m "Add WaypointManager.TryApplyOffset with UR->Unity frame inverse, 
 
 ---
 
-### Task 7: `VoiceCommandRouter` — structured command dispatch
+### Task 7: Isolated visual verification of the frame conversion
+
+**Files:**
+- Create: `Assets/Scripts/Voice/OffsetVerificationHarness.cs` (temporary — deleted in Task 9 once `NluDebugInput` supersedes it)
+
+**Interfaces:**
+- Consumes: `WaypointManager.TryGetWaypointByReference` (Task 5), `WaypointManager.TryApplyOffset` (Task 6), `OperationsManager.robotBase` (pre-existing, public).
+- Produces: nothing consumed by later tasks — this is a throwaway diagnostic, deliberately decoupled from the NLU server, the dispatcher, and the debug input, so a sign error can only mean one thing: `TryApplyOffset` itself.
+
+- [ ] **Step 1: Create the harness**
+
+`Assets/Scripts/Voice/OffsetVerificationHarness.cs`:
+```csharp
+using UnityEngine;
+
+/// <summary>
+/// TEMPORARY. Verifies WaypointManager.TryApplyOffset's UR-frame-to-Unity axis
+/// conversion in isolation, before VoiceCommandRouter or NluDebugInput exist to
+/// obscure whether a sign error is in the conversion itself or somewhere else in
+/// the pipeline. This conversion has a documented history of wrong signs in this
+/// codebase (see the dead/commented conversion in OperationsManager.cs).
+///
+/// Editor-only. Self-bootstraps -- no scene/prefab wiring required.
+/// Keys 1/2/3 apply a +5cm offset along UR x/y/z to the LAST placed waypoint.
+///
+/// Deleted in Task 9 once NluDebugInput covers this same check end-to-end.
+/// </summary>
+public class OffsetVerificationHarness : MonoBehaviour
+{
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private WaypointManager waypointManager;
+    private OperationsManager operationsManager;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void Bootstrap()
+    {
+        var go = new GameObject("[OffsetVerificationHarness]");
+        go.AddComponent<OffsetVerificationHarness>();
+        DontDestroyOnLoad(go);
+    }
+
+    private void Start()
+    {
+        waypointManager = FindObjectOfType<WaypointManager>();
+        operationsManager = FindObjectOfType<OperationsManager>();
+    }
+
+    private void Update()
+    {
+        if (waypointManager == null || operationsManager == null || operationsManager.robotBase == null)
+            return;
+
+        string axis = null;
+        if (Input.GetKeyDown(KeyCode.Alpha1)) axis = "x";
+        else if (Input.GetKeyDown(KeyCode.Alpha2)) axis = "y";
+        else if (Input.GetKeyDown(KeyCode.Alpha3)) axis = "z";
+        if (axis == null) return;
+
+        var result = waypointManager.TryGetWaypointByReference("last", out Waypoint wp);
+        if (result != WaypointManager.ReferenceResolution.Resolved)
+        {
+            Debug.LogWarning("[OffsetVerificationHarness] No waypoint to offset -- place one first.");
+            return;
+        }
+
+        var offsetResult = waypointManager.TryApplyOffset(wp, axis, 0.05f, operationsManager.robotBase);
+        Debug.Log($"[OffsetVerificationHarness] axis={axis} offset=+0.05 -> {offsetResult}");
+    }
+#endif
+}
+```
+
+- [ ] **Step 2: Verify it compiles**
+
+Close the Unity Editor GUI first if it's open (see the batchmode/Editor collision note in Global Constraints). Run:
+```bash
+"/c/Program Files/Unity/Hub/Editor/2022.3.62f3/Editor/Unity.exe" -batchmode -quit -projectPath "D:\GitHub\WayPointCreator" -logFile "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task7.log"
+```
+```bash
+grep -i "error CS" "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task7.log"
+```
+Expected: no output.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add Assets/Scripts/Voice/OffsetVerificationHarness.cs
+git commit -m "Add temporary harness to isolate-verify the UR->Unity offset frame conversion"
+```
+
+- [ ] **Step 4: Manual visual verification (hard gate — requires the user)**
+
+This step needs a person looking at the Unity Scene view; report back which of the following actually happened for each axis rather than assuming.
+
+1. Open the Unity Editor on this project and enter Play mode.
+2. Place one waypoint by hand (pinch, existing interaction) or via whatever manual placement the scene supports without voice/NLU (none of that exists yet at this point in the build).
+3. Press **1** → applies +5cm along UR axis `x`. Expected: the waypoint moves **forward, away from the robot base**.
+4. Press **2** → applies +5cm along UR axis `y`. Expected: the waypoint moves to the **operator's left**.
+5. Press **3** → applies +5cm along UR axis `z`. Expected: the waypoint moves **up**.
+6. Check the Console for the `[OffsetVerificationHarness]` log line after each press, confirming `OffsetResult.Applied` and no exceptions.
+
+**If any axis moves the wrong way or doesn't move at all: stop.** Do not proceed to Task 8. Go back and fix the sign/axis mapping in `WaypointManager.TryApplyOffset` (Task 6), matching the canonical conversion documented in Global Constraints, then repeat this step.
+
+---
+
+### Task 8: `VoiceCommandRouter` — structured command dispatch
 
 **Files:**
 - Modify: `Assets/Scripts/Voice/VoiceCommandRouter.cs`
 
 **Interfaces:**
 - Consumes: `WaypointManager.ReferenceResolution`, `TryGetWaypointByReference` (Task 5); `WaypointManager.OffsetResult`, `TryApplyOffset` (Task 6); existing `Dispatch(VoiceIntent, float, string)`, `SetMode(WaypointMode, string)`, `Say(string)`, `Waypoints` property, `operationsManager.robotBase` (all pre-existing in this file/`OperationsManager.cs`).
-- Produces: `class NluCommand` (serializable) and `void DispatchStructuredCommand(NluCommand cmd)` on `VoiceCommandRouter`, used by Task 8 (`NluDebugInput`).
+- Produces: `class NluCommand` (serializable) and `void DispatchStructuredCommand(NluCommand cmd)` on `VoiceCommandRouter`, used by Task 9 (`NluDebugInput`).
 
 - [ ] **Step 1: Add the `NluCommand` class**
 
@@ -804,10 +910,10 @@ Inside `VoiceCommandRouter`, add after the existing public `Dispatch(...)` metho
 
 Run:
 ```bash
-"/c/Program Files/Unity/Hub/Editor/2022.3.62f3/Editor/Unity.exe" -batchmode -quit -projectPath "D:\GitHub\WayPointCreator" -logFile "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task7.log"
+"/c/Program Files/Unity/Hub/Editor/2022.3.62f3/Editor/Unity.exe" -batchmode -quit -projectPath "D:\GitHub\WayPointCreator" -logFile "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task8.log"
 ```
 ```bash
-grep -i "error CS" "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task7.log"
+grep -i "error CS" "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task8.log"
 ```
 Expected: no output.
 
@@ -820,14 +926,15 @@ git commit -m "Add VoiceCommandRouter.DispatchStructuredCommand for all four NLU
 
 ---
 
-### Task 8: `NluDebugInput` — Editor debug input
+### Task 9: `NluDebugInput` — Editor debug input
 
 **Files:**
 - Create: `Assets/Scripts/Voice/NluDebugInput.cs`
+- Delete: `Assets/Scripts/Voice/OffsetVerificationHarness.cs` (Task 7's throwaway harness — this component now covers the same check end-to-end, plus the other three command types)
 
 **Interfaces:**
-- Consumes: `VoiceCommandRouter.DispatchStructuredCommand(NluCommand)`, `NluCommand` (Task 7).
-- Produces: nothing consumed by later tasks — this is the top of the chain, exercised directly in Task 9.
+- Consumes: `VoiceCommandRouter.DispatchStructuredCommand(NluCommand)`, `NluCommand` (Task 8).
+- Produces: nothing consumed by later tasks — this is the top of the chain, exercised directly in Task 10.
 
 - [ ] **Step 1: Create the debug input component**
 
@@ -951,32 +1058,40 @@ public class NluServerResponse
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [ ] **Step 2: Delete the superseded harness**
+
+```bash
+git rm Assets/Scripts/Voice/OffsetVerificationHarness.cs
+git rm Assets/Scripts/Voice/OffsetVerificationHarness.cs.meta
+```
+(If the `.meta` file glob doesn't match exactly that name, check `git status` for the actual `.meta` filename Unity generated in Task 7 and remove that instead — Unity always pairs a `.cs` with a `.meta`, and leaving an orphaned `.meta` behind produces a harmless but confusing warning on next Editor load.)
+
+- [ ] **Step 3: Verify it compiles**
 
 Run:
 ```bash
-"/c/Program Files/Unity/Hub/Editor/2022.3.62f3/Editor/Unity.exe" -batchmode -quit -projectPath "D:\GitHub\WayPointCreator" -logFile "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task8.log"
+"/c/Program Files/Unity/Hub/Editor/2022.3.62f3/Editor/Unity.exe" -batchmode -quit -projectPath "D:\GitHub\WayPointCreator" -logFile "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task9.log"
 ```
 ```bash
-grep -i "error CS" "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task8.log"
+grep -i "error CS" "C:\Users\smh10\AppData\Local\Temp\claude\d--GitHub-WayPointCreator\3e101a25-6d0a-46d5-8dc4-0277acde0ef1\scratchpad\unity_compile_task9.log"
 ```
 Expected: no output.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add Assets/Scripts/Voice/NluDebugInput.cs
-git commit -m "Add self-bootstrapping Editor-only NLU debug input"
+git commit -m "Add self-bootstrapping Editor-only NLU debug input, retire the offset verification harness"
 ```
 
 ---
 
-### Task 9: Full Stage 1 manual verification pass
+### Task 10: Full Stage 1 manual verification pass
 
-**Files:** none (verification only — this is where the frame-conversion signs and dispatch behavior actually get exercised, per the testing-approach note in Global Constraints).
+**Files:** none (verification only). Task 7 already gave the primary signal on the frame-conversion signs in isolation; this pass confirms that survives full pipeline integration (NLU parsing → dispatcher → `WaypointManager`) and exercises the rest of the dispatch behavior for the first time end-to-end, per the testing-approach note in Global Constraints.
 
 **Interfaces:**
-- Consumes: everything from Tasks 1–8.
+- Consumes: everything from Tasks 1–9.
 
 - [ ] **Step 1: Start the NLU server** (must happen before Play mode — the debug input has no auto-launch/retry)
 
@@ -997,7 +1112,7 @@ py Server/nlu_server.py
 
 - [ ] **Step 4: Verify all three translation axes, with signs**
 
-Place at least one waypoint by hand (pinch, per existing interaction) or via the `create` canned utterance (key `3`... note: canned utterances are indices 1-5 for the array in Task 8; "create" isn't in the canned list, so type it directly): type `create a waypoint`, confirm Create-mode message appears, then pinch-place one waypoint in the Scene view.
+Place at least one waypoint by hand (pinch, per existing interaction), or type `create a waypoint` directly into the debug input (it isn't in the Task 9 canned-utterance list, so type it): confirm the Create-mode message appears, then pinch-place one waypoint in the Scene view.
 
 Then, for each axis, type an utterance and visually confirm the waypoint moves in the Scene view exactly as follows relative to `robotBase`:
 - `move waypoint one forward 5 centimeters` → **+x** → should move **forward, away from the robot base**.
