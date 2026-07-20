@@ -43,5 +43,22 @@ def shape_command_for_wire(cmd):
     return out
 
 
+def handle_nlu_request(msg_obj, model):
+    """msg_obj: the parsed request dict (must have 'utterance'). Returns a
+    response dict ready for json.dumps -- never raises for model/parse
+    failures, only for programmer errors."""
+    utterance = msg_obj.get("utterance", "")
+    if not utterance:
+        return {"success": False, "message": "Missing 'utterance'."}
+
+    obj, _dt, raw = call_ollama(model, utterance)
+    obj = normalize(obj)
+    if obj is None or "type" not in obj:
+        return {"success": False,
+                "message": f"Malformed model output: {raw[:200]!r}"}
+
+    return {"success": True, "command": shape_command_for_wire(obj)}
+
+
 if __name__ == "__main__":
     pass  # server wiring added in Task 3

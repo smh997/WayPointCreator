@@ -70,3 +70,42 @@ def test_other_fields_pass_through_unchanged():
     assert out["type"] == "authoring"
     assert out["operation"] == "offset"
     assert out["axis"] == "y"
+
+
+from unittest.mock import patch
+
+import nlu_server
+from nlu_server import handle_nlu_request
+
+
+def test_missing_utterance_returns_failure():
+    result = handle_nlu_request({}, "qwen2.5:3b")
+    assert result["success"] is False
+    assert "utterance" in result["message"]
+
+
+def test_successful_command_round_trip():
+    fake_obj = {"type": "authoring", "operation": "offset", "reference": 2,
+                "axis": "z", "offset": 0.05}
+    with patch.object(nlu_server, "call_ollama",
+                       return_value=(fake_obj, 0.1, '{"type":"authoring",...}')):
+        result = handle_nlu_request({"utterance": "move waypoint two up 5cm"},
+                                     "qwen2.5:3b")
+    assert result["success"] is True
+    assert result["command"]["type"] == "authoring"
+    assert result["command"]["reference"] == "2"  # wire-shaped, not int 2
+
+
+def test_malformed_model_output_returns_failure():
+    with patch.object(nlu_server, "call_ollama",
+                       return_value=(None, 0.1, "not json")):
+        result = handle_nlu_request({"utterance": "gibberish"}, "qwen2.5:3b")
+    assert result["success"] is False
+    assert "message" in result
+
+
+def test_model_output_missing_type_field_returns_failure():
+    with patch.object(nlu_server, "call_ollama",
+                       return_value=({"operation": "create"}, 0.1, "{}")):
+        result = handle_nlu_request({"utterance": "add one"}, "qwen2.5:3b")
+    assert result["success"] is False
