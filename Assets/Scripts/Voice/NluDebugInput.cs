@@ -31,6 +31,8 @@ public class NluDebugInput : MonoBehaviour
     private string inputText = "";
     private string statusText = "";
     private VoiceCommandRouter router;
+    private WaypointManager waypointManager;
+    private OperationsManager operationsManager;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
@@ -46,12 +48,21 @@ public class NluDebugInput : MonoBehaviour
         if (router == null)
             Debug.LogWarning("[NluDebugInput] No VoiceCommandRouter found in scene -- " +
                               "responses will be logged but not dispatched.");
+
+        waypointManager = FindObjectOfType<WaypointManager>();
+        operationsManager = FindObjectOfType<OperationsManager>();
     }
 
     private void Update()
     {
         if (GUI.GetNameOfFocusedControl() == "NluTextField")
             return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            SpawnDebugWaypoint();
+            return;
+        }
 
         for (int i = 0; i < CannedUtterances.Length; i++)
         {
@@ -60,10 +71,32 @@ public class NluDebugInput : MonoBehaviour
         }
     }
 
+    // Bypasses MRTK hand-pinch placement for manual testing convenience: places
+    // a waypoint at a fixed point in front of and slightly above the robot base
+    // (robotBase-local space), so voice/authoring commands have something to
+    // target without simulating a pinch first.
+    private void SpawnDebugWaypoint()
+    {
+        if (waypointManager == null || operationsManager == null || operationsManager.robotBase == null)
+        {
+            Debug.LogWarning("[NluDebugInput] Can't spawn a debug waypoint -- " +
+                              "WaypointManager/OperationsManager/robotBase not found.");
+            return;
+        }
+
+        Transform robotBase = operationsManager.robotBase;
+        Vector3 localSpawnPos = new Vector3(0f, 0.2f, 0.4f);
+        Vector3 worldSpawnPos = robotBase.TransformPoint(localSpawnPos);
+
+        waypointManager.SetMode(WaypointMode.Create);
+        waypointManager.AddWaypoint(worldSpawnPos, robotBase.rotation);
+        Debug.Log($"[NluDebugInput] Spawned debug waypoint at robotBase-local {localSpawnPos} (world {worldSpawnPos}).");
+    }
+
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 420, 130));
-        GUILayout.Label("NLU Debug Input  (keys 1-5 = canned utterances)");
+        GUILayout.BeginArea(new Rect(10, 10, 420, 150));
+        GUILayout.Label("NLU Debug Input  (key 0 = spawn waypoint, keys 1-5 = canned utterances)");
         GUI.SetNextControlName("NluTextField");
         inputText = GUILayout.TextField(inputText);
 
