@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
@@ -49,6 +50,9 @@ public class NluDebugInput : MonoBehaviour
 
     private void Update()
     {
+        if (GUI.GetNameOfFocusedControl() == "NluTextField")
+            return;
+
         for (int i = 0; i < CannedUtterances.Length; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
@@ -60,6 +64,7 @@ public class NluDebugInput : MonoBehaviour
     {
         GUILayout.BeginArea(new Rect(10, 10, 420, 130));
         GUILayout.Label("NLU Debug Input  (keys 1-5 = canned utterances)");
+        GUI.SetNextControlName("NluTextField");
         inputText = GUILayout.TextField(inputText);
 
         bool enterPressed = Event.current.type == EventType.KeyDown &&
@@ -69,6 +74,12 @@ public class NluDebugInput : MonoBehaviour
 
         GUILayout.Label(statusText);
         GUILayout.EndArea();
+    }
+
+    private void ReportServerUnreachable(System.Exception e)
+    {
+        statusText = $"NLU server not reachable on {ServerIP}:{ServerPort}";
+        Debug.LogWarning("[NluDebugInput] " + statusText + " (" + e.Message + ")");
     }
 
     private void SendUtterance(string utterance)
@@ -98,8 +109,11 @@ public class NluDebugInput : MonoBehaviour
         }
         catch (SocketException e)
         {
-            statusText = $"NLU server not reachable on {ServerIP}:{ServerPort}";
-            Debug.LogWarning("[NluDebugInput] " + statusText + " (" + e.Message + ")");
+            ReportServerUnreachable(e);
+        }
+        catch (IOException e)
+        {
+            ReportServerUnreachable(e);
         }
     }
 
