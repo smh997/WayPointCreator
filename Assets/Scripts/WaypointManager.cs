@@ -19,6 +19,12 @@ public enum ReferenceResolution
     OutOfRange
 }
 
+public enum OffsetResult
+{
+    Applied,
+    UnsupportedAxis
+}
+
 public class WaypointManager : MonoBehaviour
 {
     public GameObject waypointPrefab;
@@ -156,5 +162,41 @@ public class WaypointManager : MonoBehaviour
         }
 
         return ReferenceResolution.OutOfRange;
+    }
+
+    /// <summary>
+    /// Applies a UR10-base-frame offset (SI units: meters for x/y/z) to a
+    /// waypoint, converting into Unity's local space relative to robotBase.
+    /// This is the INVERSE of the conversion in
+    /// OperationsManager.CalculateWaypointsData() -- that is the canonical,
+    /// live Unity->UR conversion (UR.x=Unity.z, UR.y=-Unity.x, UR.z=Unity.y);
+    /// a second, dead/commented conversion elsewhere in OperationsManager.cs
+    /// uses different signs and must NOT be used as a reference here.
+    ///
+    /// Rotation axes (rx/ry/rz) are not implemented -- composing an
+    /// axis-angle offset in UR frame back onto the waypoint's quaternion is
+    /// materially more complex than translation and is deferred past Stage 1
+    /// (tracked as required before the demo video). Returns UnsupportedAxis
+    /// rather than silently no-op'ing or misapplying.
+    /// </summary>
+    public OffsetResult TryApplyOffset(Waypoint wp, string axis, float value, Transform robotBase)
+    {
+        Vector3 localDelta;
+        switch (axis)
+        {
+            case "x": localDelta = new Vector3(0f, 0f, value); break;   // UR x -> Unity local z (forward)
+            case "y": localDelta = new Vector3(-value, 0f, 0f); break;  // UR y -> Unity local -x (operator's left)
+            case "z": localDelta = new Vector3(0f, value, 0f); break;   // UR z -> Unity local y (up)
+            case "rx":
+            case "ry":
+            case "rz":
+                return OffsetResult.UnsupportedAxis;
+            default:
+                return OffsetResult.UnsupportedAxis;
+        }
+
+        Vector3 localPos = robotBase.InverseTransformPoint(wp.transform.position);
+        wp.transform.position = robotBase.TransformPoint(localPos + localDelta);
+        return OffsetResult.Applied;
     }
 }
