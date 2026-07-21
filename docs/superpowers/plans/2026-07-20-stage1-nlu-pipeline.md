@@ -672,7 +672,7 @@ public class OffsetVerificationHarness : MonoBehaviour
         if (axis == null) return;
 
         var result = waypointManager.TryGetWaypointByReference("last", out Waypoint wp);
-        if (result != WaypointManager.ReferenceResolution.Resolved)
+        if (result != ReferenceResolution.Resolved)
         {
             Debug.LogWarning("[OffsetVerificationHarness] No waypoint to offset -- place one first.");
             return;
@@ -724,7 +724,7 @@ This step needs a person looking at the Unity Scene view; report back which of t
 - Modify: `Assets/Scripts/Voice/VoiceCommandRouter.cs`
 
 **Interfaces:**
-- Consumes: `WaypointManager.ReferenceResolution`, `TryGetWaypointByReference` (Task 5); `WaypointManager.OffsetResult`, `TryApplyOffset` (Task 6); existing `Dispatch(VoiceIntent, float, string)`, `SetMode(WaypointMode, string)`, `Say(string)`, `Waypoints` property, `operationsManager.robotBase` (all pre-existing in this file/`OperationsManager.cs`).
+- Consumes: `ReferenceResolution` (top-level enum, NOT nested in `WaypointManager` — matches the existing top-level `WaypointMode` style, referenced unqualified), `TryGetWaypointByReference` (Task 5); `OffsetResult` (top-level enum, same style), `TryApplyOffset` (Task 6); existing `Dispatch(VoiceIntent, float, string)`, `SetMode(WaypointMode, string)`, `Say(string)`, `Waypoints` property, `operationsManager.robotBase` (all pre-existing in this file/`OperationsManager.cs`).
 - Produces: `class NluCommand` (serializable) and `void DispatchStructuredCommand(NluCommand cmd)` on `VoiceCommandRouter`, used by Task 9 (`NluDebugInput`).
 
 - [ ] **Step 1: Add the `NluCommand` class**
@@ -867,13 +867,13 @@ Inside `VoiceCommandRouter`, add after the existing public `Dispatch(...)` metho
         var result = Waypoints.TryGetWaypointByReference(reference, out Waypoint wp);
         switch (result)
         {
-            case WaypointManager.ReferenceResolution.Resolved:
+            case ReferenceResolution.Resolved:
                 Waypoints.RemoveWaypoint(wp);
                 break;
-            case WaypointManager.ReferenceResolution.Missing:
+            case ReferenceResolution.Missing:
                 Say("Which waypoint? Say delete last, or a waypoint number.");
                 break;
-            case WaypointManager.ReferenceResolution.OutOfRange:
+            case ReferenceResolution.OutOfRange:
                 Say(reference == "last" ? "There are no waypoints." : $"There's no waypoint {reference}.");
                 break;
         }
@@ -888,19 +888,19 @@ Inside `VoiceCommandRouter`, add after the existing public `Dispatch(...)` metho
         }
 
         var result = Waypoints.TryGetWaypointByReference(reference, out Waypoint wp);
-        if (result == WaypointManager.ReferenceResolution.Missing)
+        if (result == ReferenceResolution.Missing)
         {
             Say("Which waypoint? Say offset last, or a waypoint number.");
             return;
         }
-        if (result == WaypointManager.ReferenceResolution.OutOfRange)
+        if (result == ReferenceResolution.OutOfRange)
         {
             Say(reference == "last" ? "There are no waypoints." : $"There's no waypoint {reference}.");
             return;
         }
 
         var offsetResult = Waypoints.TryApplyOffset(wp, axis, value, operationsManager.robotBase);
-        Say(offsetResult == WaypointManager.OffsetResult.UnsupportedAxis
+        Say(offsetResult == OffsetResult.UnsupportedAxis
             ? "Rotation offsets aren't wired up yet."
             : "Offset applied.");
     }
