@@ -86,7 +86,8 @@ def start_server(host="0.0.0.0", port=5001):
                 except json.JSONDecodeError:
                     response = {"success": False, "message": "Invalid JSON format."}
                 else:
-                    if msg_obj.get("type", "").lower() != "nlu":
+                    msg_type = msg_obj.get("type")
+                    if not isinstance(msg_type, str) or msg_type.lower() != "nlu":
                         response = {"success": False, "message": "Unknown request type."}
                     else:
                         response = handle_nlu_request(msg_obj, MODEL)

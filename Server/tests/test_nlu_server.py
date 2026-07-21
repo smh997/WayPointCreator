@@ -158,3 +158,23 @@ def test_server_rejects_non_nlu_request_type():
         response = json_module.loads(client.recv(4096).decode("utf-8").strip())
 
     assert response["success"] is False
+
+
+def test_server_handles_null_type_without_crashing():
+    test_port = 15003
+    thread = threading.Thread(
+        target=nlu_server.start_server,
+        kwargs={"host": "127.0.0.1", "port": test_port},
+        daemon=True,
+    )
+    thread.start()
+    time.sleep(0.3)
+
+    with socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM) as client:
+        client.connect(("127.0.0.1", test_port))
+        request = json_module.dumps({"type": None, "utterance": "x"}) + "\n"
+        client.sendall(request.encode("utf-8"))
+        response = json_module.loads(client.recv(4096).decode("utf-8").strip())
+
+    assert response["success"] is False
+    assert response["message"] == "Unknown request type."
