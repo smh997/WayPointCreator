@@ -12,6 +12,13 @@ public enum WaypointMode
     Idle
 }
 
+public enum ReferenceResolution
+{
+    Resolved,
+    Missing,
+    OutOfRange
+}
+
 public class WaypointManager : MonoBehaviour
 {
     public GameObject waypointPrefab;
@@ -120,4 +127,34 @@ public class WaypointManager : MonoBehaviour
     }
 
     public List<Waypoint> GetWaypoints() => waypoints;
+
+    /// <summary>
+    /// Resolves an authoring command's `reference` field ("last", a 1-indexed
+    /// integer as a string, or null/empty) to a Waypoint. Distinguishes
+    /// "no reference given" from "that waypoint doesn't exist" so callers can
+    /// give different feedback for each -- see ReferenceResolution.
+    /// </summary>
+    public ReferenceResolution TryGetWaypointByReference(string reference, out Waypoint wp)
+    {
+        wp = null;
+
+        if (string.IsNullOrEmpty(reference))
+            return ReferenceResolution.Missing;
+
+        if (reference == "last")
+        {
+            if (waypoints.Count == 0)
+                return ReferenceResolution.OutOfRange;
+            wp = waypoints[waypoints.Count - 1];
+            return ReferenceResolution.Resolved;
+        }
+
+        if (int.TryParse(reference, out int index) && index >= 1 && index <= waypoints.Count)
+        {
+            wp = waypoints[index - 1];
+            return ReferenceResolution.Resolved;
+        }
+
+        return ReferenceResolution.OutOfRange;
+    }
 }
