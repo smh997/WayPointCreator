@@ -154,6 +154,7 @@ public class NluDebugInput : MonoBehaviour
 #endif
 }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 [System.Serializable]
 public class NluServerResponse
 {
@@ -161,3 +162,4 @@ public class NluServerResponse
     public string message;
     public NluCommand command;
 }
+#endif

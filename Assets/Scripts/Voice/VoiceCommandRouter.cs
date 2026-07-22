@@ -274,7 +274,7 @@ public class VoiceCommandRouter : MonoBehaviour
                 Say("Which waypoint? Say delete last, or a waypoint number.");
                 break;
             case ReferenceResolution.OutOfRange:
-                Say(reference == "last" ? "There are no waypoints." : $"There's no waypoint {reference}.");
+                Say(OutOfRangeMessage(reference));
                 break;
         }
     }
@@ -295,7 +295,7 @@ public class VoiceCommandRouter : MonoBehaviour
         }
         if (result == ReferenceResolution.OutOfRange)
         {
-            Say(reference == "last" ? "There are no waypoints." : $"There's no waypoint {reference}.");
+            Say(OutOfRangeMessage(reference));
             return;
         }
 
@@ -335,6 +335,9 @@ public class VoiceCommandRouter : MonoBehaviour
     }
 
     private void DisarmRun() => runArmed = false;
+
+    private string OutOfRangeMessage(string reference) =>
+        reference == "last" ? "There are no waypoints." : $"There's no waypoint {reference}.";
 
     private void SetMode(WaypointMode mode, string msg)
     {

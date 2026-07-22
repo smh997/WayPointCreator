@@ -279,7 +279,9 @@ public class OperationsManager : MonoBehaviour
             {
                 waypointManager.AddWaypoint(pose.Position, pose.Rotation);
 
-                // Unity → UR10
+                // WARNING: Diagnostic-only conversion (Debug.Log only, never consumed by robot logic).
+                // Do NOT use as reference for coordinate frame conversions. The canonical UR10 conversion
+                // is in CalculateWaypointsData() around line 374.
                 Vector3 localPosUnity = robotBase.InverseTransformPoint(pose.Position);
                 Vector3 localPosUR = new Vector3(-localPosUnity.z, -localPosUnity.x, localPosUnity.y);
                 Quaternion localRotUnity = Quaternion.Inverse(robotBase.rotation) * pose.Rotation;
