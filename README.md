@@ -16,9 +16,9 @@ This repository contains the **full implementation used in our IEEE paper**, inc
 
 ### End-to-End Video Demonstration
 
-<video src="https://github.com/user-attachments/assets/7131f410-4359-4fb6-807a-7c5980cb8481" controls="controls" muted loop></video>
+<video src="https://github.com/user-attachments/assets/f76a412b-657e-4b35-8bab-96ef5c37d405" controls="controls" muted loop></video>
 
-<video src="https://github.com/user-attachments/assets/66765f32-38c3-42ca-b44d-efe8e6e6dc73" controls="controls" muted loop></video>
+<video src="https://github.com/user-attachments/assets/2b509f7c-a0fd-4886-bffd-6584e76186c9" controls="controls" muted loop></video>
 
 ---
 
